@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "PTRootUI-Bold";
+  src: local("PTRootUI-Bold"), url(./assets/fonts/PT-Root-UI/PT-Root-UI_Bold.web.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "PTRootUI-Light";
+  src: local("PTRootUI-Light"), url(./assets/fonts/PT-Root-UI/PT-Root-UI_Light.web.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "PTRootUI-Medium";
+  src: local("PTRootUI-Medium"), url(./assets/fonts/PT-Root-UI/PT-Root-UI_Medium.web.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "PTRootUI-Regular";
+  src: local("PTRootUI-Regular"), url(./assets/fonts/PT-Root-UI/PT-Root-UI_Regular.web.ttf) format("truetype");
+}
+
+$st-primary: mat-palette($mat-cyan);
+$st-accent:  mat-palette($mat-pink, A200, A100, A400);
+
+$st-warn:    mat-palette($mat-red);
+
+$st-theme: mat-light-theme((
+  color: (
+    primary: $st-primary,
+    accent: $st-accent,
+    warn: $st-warn
+  )
+));
+
+$typography: mat-typography-config(
+  $font-family: 'PTRootUI-Regular, Roboto, monospace',
+  $headline: mat-typography-level(28px, 36px, 400, 'PTRootUI-Bold, Roboto, monospace'),
+  $title: mat-typography-level(18px, 24px, 500, 'PTRootUI-Medium, Roboto, monospace'),
+  $subheading-2: mat-typography-level(16px, 22px, 400, 'PTRootUI-Medium, Roboto, monospace'),
+  $body-2: mat-typography-level(16px, 24px, 500),
+  $body-1: mat-typography-level(16px, 22px, 400),
+  $caption: mat-typography-level(12px, 20px, 400),
+);

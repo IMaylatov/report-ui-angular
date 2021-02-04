@@ -1,0 +1,80 @@
+<header>
+  <div fxLayout="column" fxLayoutAlign="space-around">
+    <input [(ngModel)]="report.name" class="name-field">
+
+    <div>
+      asds
+    </div>
+  </div>
+</header>
+
+<mat-drawer-container class="sidenav-container">
+  <mat-drawer mode="side" opened>
+    <h2>{{report.type}}</h2>  
+
+    <mat-divider></mat-divider>
+    
+    <mat-expansion-panel class="parameters-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Источники данных
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-list>
+        <mat-list-item *ngFor="let dataSource of report.dataSources"
+          (dblclick)="onElemEditClick({elemType: 'dataSource', item: dataSource})"
+          (contextmenu)="onContextMenu($event, {elemType: 'dataSource', item: dataSource})">
+          {{ dataSource.name }}
+        </mat-list-item>
+      </mat-action-list>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="parameters-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Наборы данных
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-list>
+        <mat-list-item *ngFor="let dataSet of report.dataSets" 
+          (dblclick)="onElemEditClick({elemType: 'dataSet', item: dataSet})"
+          (contextmenu)="onContextMenu($event, {elemType: 'dataSet', item: dataSet})">
+          {{ dataSet.name }}
+        </mat-list-item>
+      </mat-action-list>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="parameters-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Параметры
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-list>
+        <mat-list-item *ngFor="let variable of report.variables" 
+          (dblclick)="onElemEditClick({elemType: 'variable', item: variable})"
+          (contextmenu)="onContextMenu($event, {elemType: 'variable', item: variable})">
+          {{ variable.name }}
+        </mat-list-item>
+      </mat-action-list>
+    </mat-expansion-panel>
+
+    <div style="visibility: hidden; position: fixed"
+        [style.left]="contextMenuPosition.x"
+        [style.top]="contextMenuPosition.y"
+        #parameterMenuTrigger=matMenuTrigger
+        [matMenuTriggerFor]="parameterMenu">
+    </div>
+    <mat-menu #parameterMenu="matMenu">
+      <ng-template matMenuContent let-data="data">
+        <button mat-menu-item (click)="onElemEditClick(data)">Редактировать</button>
+        <button mat-menu-item (click)="onElemDeleteClick(data)">Удалить</button>
+      </ng-template>
+    </mat-menu>
+
+  </mat-drawer>
+  <mat-drawer-content>
+    Main content
+    <mat-form-field >
+      <input matInput [(ngModel)]="report.name">
+    </mat-form-field>
+  </mat-drawer-content>
+</mat-drawer-container>

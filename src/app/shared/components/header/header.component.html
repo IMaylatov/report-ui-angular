@@ -1,0 +1,18 @@
+<mat-toolbar>
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxFill>
+    <div fxLayout="row">
+      <div fxLayoutAlign="space-between center">
+        <button mat-icon-button [routerLink]="''">
+          <mat-icon svgIcon="logo" style="height: 40px; width: 40px;"></mat-icon>
+        </button>
+      </div>
+      <ng-content></ng-content>
+    </div>
+    <div>
+      <button mat-button [matMenuTriggerFor]="menu" class="username-field">{{userName}}</button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onLogoutClick()">Выйти</button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
