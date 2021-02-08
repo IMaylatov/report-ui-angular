@@ -1,16 +1,24 @@
 <header>
   <div fxLayout="column" fxLayoutAlign="space-around">
-    <input [(ngModel)]="report.name" class="name-field">
+    <div>
+      <input [(ngModel)]="report.name" class="name-field">
+      <span>{{report.type}}</span>  
+    </div>
 
     <div>
-      asds
+      <button mat-button color="primary" (click)="onSave()">Сохранить</button>
     </div>
   </div>
 </header>
 
 <mat-drawer-container class="sidenav-container">
   <mat-drawer mode="side" opened>
-    <h2>{{report.type}}</h2>  
+    <button mat-button [matMenuTriggerFor]="menu">Добавить элемент</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="onDataSourceAddClick()">Источник данных</button>
+      <button mat-menu-item>Набор данных</button>
+      <button mat-menu-item>Параметр</button>
+    </mat-menu>
 
     <mat-divider></mat-divider>
     

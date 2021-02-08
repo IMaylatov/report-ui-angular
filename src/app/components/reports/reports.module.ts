@@ -17,11 +17,15 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from 'src/app/shared/components/header/header.component';
 import { ReportsComponent } from './reports.component';
 import { NewReportComponent } from './components/new/new-report.component';
 import { FormReportComponent } from './components/form/form-report.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import { DataSourceComponent } from '../data-source/data-source.component';
+import {MatSelectModule} from '@angular/material/select';
+import { DataSourceConnectionTypeComponent } from '../data-source/data-source-connection-type/data-source-connection-type.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +33,9 @@ import { FormReportComponent } from './components/form/form-report.component';
     NewReportComponent,
     HeaderComponent,
     DetailReportComponent,
-    FormReportComponent
+    FormReportComponent,
+    DataSourceComponent,
+    DataSourceConnectionTypeComponent
   ],
   imports: [
     CommonModule,
@@ -53,8 +59,11 @@ import { FormReportComponent } from './components/form/form-report.component';
     MatTreeModule,
     MatExpansionModule,
     MatListModule,
+    MatDialogModule,
     FormsModule,
-
+    ReactiveFormsModule,
+    MatSelectModule,
+    
     FlexLayoutModule
   ]
 })

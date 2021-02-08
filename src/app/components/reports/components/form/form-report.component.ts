@@ -1,5 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { DataSourceComponent } from 'src/app/components/data-source/data-source.component';
+import { DataSource } from 'src/app/components/data-source/shared/data-source.model';
 import { Report } from '../../shared/report.model';
 
 @Component({
@@ -15,13 +18,23 @@ export class FormReportComponent implements OnInit {
 
   contextMenuPosition = { x: '0px', y: '0px' };
   
-  constructor() { }
+  constructor(public dialog: MatDialog) { }
 
   ngOnInit(): void {
   }
 
-  onDataSourceAddClick() {
+  onSave(): void {
+    console.log(this.report);
+  }
 
+  onDataSourceAddClick() {    
+    const dialogRef = this.getDataSourceDialog({ id: 0, name: '', type: '', data: {}});
+
+    dialogRef.afterClosed().subscribe(dataSource => {
+      if (dataSource) {
+        this.report.dataSources.push(dataSource);
+      }
+    });
   }
 
   onDataSetAddClick() {
@@ -30,26 +43,6 @@ export class FormReportComponent implements OnInit {
 
   onVariableAddClick() {
 
-  }
-
-  onEditClick() {
-
-  }
-
-  onDeleteClick() {
-
-  }
-
-  onDataSourceClick(dataSource: any) {
-    console.log(dataSource);
-  }
-
-  onDataSetClick(dataSet: any) {
-    console.log(dataSet);
-  }
-
-  onVariableClick(variable: any) {
-    console.log(variable);
   }
 
   onContextMenu(event: MouseEvent, data: any) {
@@ -62,10 +55,32 @@ export class FormReportComponent implements OnInit {
   }
 
   onElemEditClick(data: any) {
-    console.log(data);
+    switch(data.elemType) {
+      case 'dataSource':
+        const dialogRef = this.getDataSourceDialog(data.item);
+        dialogRef.afterClosed().subscribe(dataSource => {
+          if (dataSource) {
+            const dataSourceIndex = this.report.dataSources.indexOf(data.item);
+            this.report.dataSources[dataSourceIndex] = dataSource;
+          }
+        });
+        break;
+    }
   }
 
   onElemDeleteClick(data: any) {
-    console.log(data);
+    switch(data.elemType) {
+      case 'dataSource':
+        const dataSourceIndex = this.report.dataSources.indexOf(data.item);
+        this.report.dataSources.splice(dataSourceIndex, 1);
+        break;
+    }
   }  
+
+  getDataSourceDialog(dataSource) {
+    return this.dialog.open(DataSourceComponent, {
+      width: '800px',
+      data: dataSource
+    });
+  }
 }

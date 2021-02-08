@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>
+  Источник данных
+</h1>
+<mat-dialog-content [formGroup]="dataSourceForm">
+  <div fxLayout="column" fxLayoutAlign="start" >
+    <mat-form-field>
+      <mat-label>Наименование</mat-label>
+      <input matInput formControlName="name">
+      <mat-error *ngIf="dataSourceForm.controls.name.touched && dataSourceForm.controls.name.invalid">
+        <span *ngIf="dataSourceForm.controls.name.errors.required">Наименование не заполнено</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Тип</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let dataSourceType of dataSourceTypes" [value]="dataSourceType">
+          {{dataSourceType}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="dataSourceForm.controls.type.touched && dataSourceForm.controls.type.invalid">
+        <span *ngIf="dataSourceForm.controls.type.errors.required">Тип источника не выбран</span>
+      </mat-error>
+    </mat-form-field>
+
+    <ng-container *ngIf="dataSourceForm.value.type">
+      <data-source-connection-type formControlName="data"></data-source-connection-type>
+    </ng-container>      
+  </div>
+</mat-dialog-content>
+<div mat-dialog-actions align="end">
+  <button class="mat-raised-button" (click)="close()">Отмена</button>
+  <button class="mat-raised-button mat-primary" (click)="save()">Сохранить</button>
+</div>
