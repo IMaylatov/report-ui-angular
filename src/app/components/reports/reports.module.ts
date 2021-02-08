@@ -25,7 +25,7 @@ import { FormReportComponent } from './components/form/form-report.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { DataSourceComponent } from '../data-source/data-source.component';
 import {MatSelectModule} from '@angular/material/select';
-import { DataSourceConnectionTypeComponent } from '../data-source/data-source-connection-type/data-source-connection-type.component';
+import { DataSetComponent } from '../data-set/data-set.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +35,7 @@ import { DataSourceConnectionTypeComponent } from '../data-source/data-source-co
     DetailReportComponent,
     FormReportComponent,
     DataSourceComponent,
-    DataSourceConnectionTypeComponent
+    DataSetComponent
   ],
   imports: [
     CommonModule,

@@ -16,7 +16,7 @@
     <button mat-button [matMenuTriggerFor]="menu">Добавить элемент</button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="onDataSourceAddClick()">Источник данных</button>
-      <button mat-menu-item>Набор данных</button>
+      <button mat-menu-item (click)="onDataSetAddClick()">Набор данных</button>
       <button mat-menu-item>Параметр</button>
     </mat-menu>
 

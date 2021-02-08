@@ -4,6 +4,9 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { DataSourceComponent } from 'src/app/components/data-source/data-source.component';
 import { DataSource } from 'src/app/components/data-source/shared/data-source.model';
 import { Report } from '../../shared/report.model';
+import { deepCopy } from '../../../../shared/utils/deep-copy';
+import { DataSetComponent } from 'src/app/components/data-set/data-set.component';
+import { DATASET_TYPE_SQLQUERY } from '../../shared/reportConst';
 
 @Component({
   selector: 'form-report',
@@ -28,7 +31,8 @@ export class FormReportComponent implements OnInit {
   }
 
   onDataSourceAddClick() {    
-    const dialogRef = this.getDataSourceDialog({ id: 0, name: '', type: '', data: {}});
+    const dialogRef = this.dialog.open(DataSourceComponent, 
+      { width: '800px', data: deepCopy({ id: 0, name: '', type: '', data: {}}) });
 
     dialogRef.afterClosed().subscribe(dataSource => {
       if (dataSource) {
@@ -38,7 +42,18 @@ export class FormReportComponent implements OnInit {
   }
 
   onDataSetAddClick() {
+    const dialogRef = this.dialog.open(DataSetComponent, {
+      width: '800px', data: { 
+        report: this.report, 
+        dataSet:  deepCopy({ id: 0, name: '', type: DATASET_TYPE_SQLQUERY.name, data: {}})
+      }
+    });
 
+    dialogRef.afterClosed().subscribe(dataSet => {
+      if (dataSet) {
+        this.report.dataSets.push(dataSet);
+      }
+    });
   }
 
   onVariableAddClick() {
@@ -57,13 +72,28 @@ export class FormReportComponent implements OnInit {
   onElemEditClick(data: any) {
     switch(data.elemType) {
       case 'dataSource':
-        const dialogRef = this.getDataSourceDialog(data.item);
-        dialogRef.afterClosed().subscribe(dataSource => {
-          if (dataSource) {
-            const dataSourceIndex = this.report.dataSources.indexOf(data.item);
-            this.report.dataSources[dataSourceIndex] = dataSource;
-          }
-        });
+        {
+          const dialogRef = this.dialog.open(DataSourceComponent, 
+            { width: '800px', data: deepCopy(data.item) });
+          dialogRef.afterClosed().subscribe(dataSource => {
+            if (dataSource) {
+              const dataSourceIndex = this.report.dataSources.indexOf(data.item);
+              this.report.dataSources[dataSourceIndex] = dataSource;
+            }
+          });
+        }
+        break;
+      case 'dataSet':
+        {
+          const dialogRef = this.dialog.open(DataSetComponent, 
+            { width: '800px', data: { report: this.report, dataSet: deepCopy(data.item)} });
+          dialogRef.afterClosed().subscribe(dataSet => {
+            if (dataSet) {
+              const dataSetIndex = this.report.dataSets.indexOf(data.item);
+              this.report.dataSets[dataSetIndex] = dataSet;
+            }
+          });
+        }
         break;
     }
   }
@@ -74,13 +104,10 @@ export class FormReportComponent implements OnInit {
         const dataSourceIndex = this.report.dataSources.indexOf(data.item);
         this.report.dataSources.splice(dataSourceIndex, 1);
         break;
+      case 'dataSource':
+        const dataSetIndex = this.report.dataSets.indexOf(data.item);
+        this.report.dataSets.splice(dataSetIndex, 1);
+        break;
     }
-  }  
-
-  getDataSourceDialog(dataSource) {
-    return this.dialog.open(DataSourceComponent, {
-      width: '800px',
-      data: dataSource
-    });
   }
 }

@@ -1,0 +1,56 @@
+<form (ngSubmit)="onSubmit(dataSetForm.value)" #dataSetForm="ngForm">
+  <h1 mat-dialog-title>
+    Набор данных
+  </h1>
+  <mat-dialog-content>
+    <div fxLayout="column" fxLayoutAlign="start">
+      <mat-form-field>
+        <mat-label>Наименование</mat-label>
+        <input matInput [(ngModel)]="dataSet.name" name="name" required #name="ngModel">
+        <mat-error *ngIf="name.touched && name.invalid">
+          <span *ngIf="name.errors.required">Наименование не заполнено</span>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Тип</mat-label>
+        <mat-select [(ngModel)]="dataSet.type" name="type" required #type="ngModel">
+          <mat-option *ngFor="let dataSetType of dataSetTypes" [value]="dataSetType.name">
+            {{dataSetType.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="type.touched && type.invalid">
+          <span *ngIf="type.errors.required">Тип источника не выбран</span>
+        </mat-error>
+      </mat-form-field>
+
+      <div *ngIf="dataSet.type" ngModelGroup="data" 
+        fxLayout="column" fxLayoutAlign="start">
+        <mat-form-field>
+          <mat-label>Источник данных</mat-label>
+          <mat-select [(ngModel)]="dataSet.data.dataSourceName" name="dataSourceName" required #dataDataSourceName="ngModel">
+            <mat-option *ngFor="let dataSource of report.dataSources" [value]="dataSource.name">
+              {{dataSource.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="dataDataSourceName.touched && dataDataSourceName.invalid">
+            <span *ngIf="dataDataSourceName.errors.required">Источник данных не выбран</span>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Запрос</mat-label>
+          <textarea [(ngModel)]="dataSet.data.query" name="query" required #dataQuery="ngModel"
+            matInput rows="5" cols="40" placeholder="text"></textarea>
+          <mat-error *ngIf="dataQuery.touched && dataQuery.invalid">
+            <span *ngIf="dataQuery.errors.required">Запрос не заполнен</span>
+          </mat-error>
+        </mat-form-field>
+      </div>     
+    </div>
+  </mat-dialog-content>
+  <div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Отмена</button>
+    <button type="submit" mat-raised-button color="primary" [disabled]="!dataSetForm.form.valid">Сохранить</button>
+  </div>
+</form>

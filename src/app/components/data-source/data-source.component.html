@@ -1,34 +1,57 @@
-<h1 mat-dialog-title>
-  Источник данных
-</h1>
-<mat-dialog-content [formGroup]="dataSourceForm">
-  <div fxLayout="column" fxLayoutAlign="start" >
-    <mat-form-field>
-      <mat-label>Наименование</mat-label>
-      <input matInput formControlName="name">
-      <mat-error *ngIf="dataSourceForm.controls.name.touched && dataSourceForm.controls.name.invalid">
-        <span *ngIf="dataSourceForm.controls.name.errors.required">Наименование не заполнено</span>
-      </mat-error>
-    </mat-form-field>
+<form (ngSubmit)="onSubmit(dataSourceForm.value)" #dataSourceForm="ngForm">
+  <h1 mat-dialog-title>
+    Источник данных
+  </h1>
+  <mat-dialog-content>
+    <div fxLayout="column" fxLayoutAlign="start">
+      <mat-form-field>
+        <mat-label>Наименование</mat-label>
+        <input matInput [(ngModel)]="dataSource.name" name="name" required #name="ngModel">
+        <mat-error *ngIf="name.touched && name.invalid">
+          <span *ngIf="name.errors.required">Наименование не заполнено</span>
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field>
-      <mat-label>Тип</mat-label>
-      <mat-select formControlName="type">
-        <mat-option *ngFor="let dataSourceType of dataSourceTypes" [value]="dataSourceType">
-          {{dataSourceType}}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="dataSourceForm.controls.type.touched && dataSourceForm.controls.type.invalid">
-        <span *ngIf="dataSourceForm.controls.type.errors.required">Тип источника не выбран</span>
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field>
+        <mat-label>Тип</mat-label>
+        <mat-select [(ngModel)]="dataSource.type" name="type" required #type="ngModel">
+          <mat-option *ngFor="let dataSourceType of dataSourceTypes" [value]="dataSourceType">
+            {{dataSourceType}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="type.touched && type.invalid">
+          <span *ngIf="type.errors.required">Тип источника не выбран</span>
+        </mat-error>
+      </mat-form-field>
 
-    <ng-container *ngIf="dataSourceForm.value.type">
-      <data-source-connection-type formControlName="data"></data-source-connection-type>
-    </ng-container>      
+      <div *ngIf="dataSource.type" ngModelGroup="data" 
+        fxLayout="column" fxLayoutAlign="start">
+        <mat-form-field>
+          <mat-label>Тип соединения</mat-label>
+          <mat-select [(ngModel)]="dataSource.data.connectionType" name="connectionType" required #dataType="ngModel">
+            <mat-option *ngFor="let connectionType of connectionTypes" [value]="connectionType.name">
+              {{connectionType.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="dataType.touched && dataType.invalid">
+            <span *ngIf="dataType.errors.required">Тип соединения не выбран</span>
+          </mat-error>
+        </mat-form-field>
+
+        <ng-container *ngIf="dataSource.data.connectionType === connectionTypeConnectionString">
+          <mat-form-field>
+            <mat-label>Строка соединения</mat-label>
+            <input matInput [(ngModel)]="dataSource.data.connectionString" name="connectionString" required #dataConnectionString="ngModel">
+            <mat-error *ngIf="dataConnectionString.touched && dataConnectionString.invalid">
+              <span *ngIf="dataConnectionString.errors.required">Строка соединения не заполнена</span>
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
+      </div>     
+    </div>
+  </mat-dialog-content>
+  <div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Отмена</button>
+    <button type="submit" mat-raised-button color="primary" [disabled]="!dataSourceForm.form.valid">Сохранить</button>
   </div>
-</mat-dialog-content>
-<div mat-dialog-actions align="end">
-  <button class="mat-raised-button" (click)="close()">Отмена</button>
-  <button class="mat-raised-button mat-primary" (click)="save()">Сохранить</button>
-</div>
+</form>
