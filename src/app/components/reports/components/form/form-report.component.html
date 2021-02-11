@@ -1,12 +1,12 @@
 <header>
-  <div fxLayout="column" fxLayoutAlign="space-around">
+  <div fxLayout="column" fxLayoutAlign="space-around" class="header-panel">
     <div>
       <input [(ngModel)]="report.name" class="name-field">
-      <span>{{report.type}}</span>  
     </div>
 
-    <div>
-      <button mat-button color="primary" (click)="onSave()">Сохранить</button>
+    <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="10px">
+      <span class="header-report-type">{{report.type}}</span>  
+      <button mat-raised-button (click)="onSave()">Сохранить</button>
     </div>
   </div>
 </header>
@@ -15,9 +15,9 @@
   <mat-drawer mode="side" opened>
     <button mat-button [matMenuTriggerFor]="menu">Добавить элемент</button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="onDataSourceAddClick()">Источник данных</button>
-      <button mat-menu-item (click)="onDataSetAddClick()">Набор данных</button>
-      <button mat-menu-item>Параметр</button>
+      <button mat-menu-item (click)="onElementAddClick('dataSources')">Источник данных</button>
+      <button mat-menu-item (click)="onElementAddClick('dataSets')">Набор данных</button>
+      <button mat-menu-item (click)="onElementAddClick('variables')">Параметр</button>
     </mat-menu>
 
     <mat-divider></mat-divider>
@@ -30,8 +30,8 @@
       </mat-expansion-panel-header>
       <mat-action-list>
         <mat-list-item *ngFor="let dataSource of report.dataSources"
-          (dblclick)="onElemEditClick({elemType: 'dataSource', item: dataSource})"
-          (contextmenu)="onContextMenu($event, {elemType: 'dataSource', item: dataSource})">
+          (dblclick)="onElemEditClick('dataSources', dataSource)"
+          (contextmenu)="onContextMenu($event, 'dataSources', dataSource)">
           {{ dataSource.name }}
         </mat-list-item>
       </mat-action-list>
@@ -44,8 +44,8 @@
       </mat-expansion-panel-header>
       <mat-action-list>
         <mat-list-item *ngFor="let dataSet of report.dataSets" 
-          (dblclick)="onElemEditClick({elemType: 'dataSet', item: dataSet})"
-          (contextmenu)="onContextMenu($event, {elemType: 'dataSet', item: dataSet})">
+          (dblclick)="onElemEditClick('dataSets', dataSet)"
+          (contextmenu)="onContextMenu($event, 'dataSets', dataSet)">
           {{ dataSet.name }}
         </mat-list-item>
       </mat-action-list>
@@ -58,8 +58,8 @@
       </mat-expansion-panel-header>
       <mat-action-list>
         <mat-list-item *ngFor="let variable of report.variables" 
-          (dblclick)="onElemEditClick({elemType: 'variable', item: variable})"
-          (contextmenu)="onContextMenu($event, {elemType: 'variable', item: variable})">
+          (dblclick)="onElemEditClick('variables', variable)"
+          (contextmenu)="onContextMenu($event, 'variables', variable)">
           {{ variable.name }}
         </mat-list-item>
       </mat-action-list>
@@ -73,8 +73,8 @@
     </div>
     <mat-menu #parameterMenu="matMenu">
       <ng-template matMenuContent let-data="data">
-        <button mat-menu-item (click)="onElemEditClick(data)">Редактировать</button>
-        <button mat-menu-item (click)="onElemDeleteClick(data)">Удалить</button>
+        <button mat-menu-item (click)="onElemEditClick(data.elemType, data.item)">Редактировать</button>
+        <button mat-menu-item (click)="onElemDeleteClick(data.elemType, data.item)">Удалить</button>
       </ng-template>
     </mat-menu>
 

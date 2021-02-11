@@ -10,14 +10,15 @@ import { DataSet } from './shared/data-set.model';
   styleUrls: ['./data-set.component.scss']
 })
 export class DataSetComponent {
+  dataSetTypes = DATASET_TYPES; 
+   
   report: Report = null;
   dataSet: DataSet = null;
-  dataSetTypes = DATASET_TYPES;  
 
   constructor(public dialogRef: MatDialogRef<DataSetComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { report: Report, dataSet: DataSet }) { 
+    @Inject(MAT_DIALOG_DATA) public data: { report: Report, item: DataSet }) { 
       this.report = data.report;
-      this.dataSet = data.dataSet;
+      this.dataSet = data.item;
     }
   
   onSubmit(dataSet: any): void {

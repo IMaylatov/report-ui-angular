@@ -26,6 +26,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { DataSourceComponent } from '../data-source/data-source.component';
 import {MatSelectModule} from '@angular/material/select';
 import { DataSetComponent } from '../data-set/data-set.component';
+import { VariableComponent } from '../variable/variable.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { DataSetComponent } from '../data-set/data-set.component';
     DetailReportComponent,
     FormReportComponent,
     DataSourceComponent,
-    DataSetComponent
+    DataSetComponent,
+    VariableComponent
   ],
   imports: [
     CommonModule,
@@ -63,6 +66,7 @@ import { DataSetComponent } from '../data-set/data-set.component';
     FormsModule,
     ReactiveFormsModule,
     MatSelectModule,
+    MatCheckboxModule,
     
     FlexLayoutModule
   ]

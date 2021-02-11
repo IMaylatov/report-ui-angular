@@ -1,0 +1,108 @@
+<form (ngSubmit)="onSubmit(variableForm.value)" #variableForm="ngForm">
+  <h1 mat-dialog-title>
+    Параметр
+  </h1>
+  <mat-dialog-content>
+    <div fxLayout="column" fxLayoutAlign="start">
+      <div fxLayout="column">
+        <mat-form-field>
+          <mat-label>Наименование</mat-label>
+          <input matInput [(ngModel)]="variable.name" name="name" required #name="ngModel">
+          <mat-error *ngIf="name.touched && name.invalid">
+            <span *ngIf="name.errors.required">Наименование не заполнено</span>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Загаловок</mat-label>
+          <input matInput [(ngModel)]="variable.label" name="label" required #label="ngModel">
+          <mat-error *ngIf="label.touched && label.invalid">
+            <span *ngIf="label.errors.required">Заголовок не заполнен</span>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-checkbox [(ngModel)]="variable.required" name="required" #type="ngModel" labelPosition="before">
+        Обязательный
+      </mat-checkbox>
+
+      <mat-form-field>
+        <mat-label>Тип</mat-label>
+        <mat-select [(ngModel)]="variable.type" (ngModelChange)="onVariableTypeChange($event)" name="type" required #type="ngModel">
+          <mat-option *ngFor="let variableType of variableTypes" [value]="variableType.name">
+            {{variableType.label}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="type.touched && type.invalid">
+          <span *ngIf="type.errors.required">Тип параметра не выбран</span>
+        </mat-error>
+      </mat-form-field>      
+
+      <div *ngIf="variable.type === variableTypeSelect || variable.type === variableTypeMultipleSelect"
+        ngModelGroup="data">
+        <div fxLayout="row" fxLayoutGap="10px">
+          <mat-form-field>
+            <mat-label>Отображаемое поле</mat-label>
+            <input matInput [(ngModel)]="variable.data.captionField" 
+              name="captionField" required #captionField="ngModel">
+            <mat-error *ngIf="captionField.touched && captionField.invalid">
+              <span *ngIf="captionField.errors.required">Отображаемое поле не заполнено</span>
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Ключевое поле</mat-label>
+            <input matInput [(ngModel)]="variable.data.keyField" 
+              name="keyField" required #keyField="ngModel">
+            <mat-error *ngIf="keyField.touched && keyField.invalid">
+              <span *ngIf="keyField.errors.required">Ключевое поле не заполнено</span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div fxLayout="row" fxLayoutGap="10px">
+          <mat-checkbox [(ngModel)]="variable.data.useTable" 
+            name="useTable" #useTable="ngModel" labelPosition="before">
+            Использовать табличное представление
+          </mat-checkbox>
+
+          <button *ngIf="variable.data.useTable" mat-icon-button
+            (click)="onTableSettingClick($event)">
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
+                  
+        <div ngModelGroup="dataSet">
+          <div fxLayout="column" ngModelGroup="data">
+            <mat-form-field>
+              <mat-label>Источник данных</mat-label>
+              <mat-select [(ngModel)]="variable.data.dataSet.data.dataSourceName" 
+                name="dataSourceName" required #dataSourceName="ngModel">
+                <mat-option *ngFor="let dataSource of report.dataSources" [value]="dataSource.name">
+                  {{dataSource.name}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="dataSourceName.touched && dataSourceName.invalid">
+                <span *ngIf="dataSourceName.errors.required">Источник данных не выбран</span>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Запрос</mat-label>
+              <textarea [(ngModel)]="variable.data.dataSet.data.query"
+                name="query" required #query="ngModel"
+                matInput rows="4" cols="40" placeholder="text"></textarea>
+              <mat-error *ngIf="query.touched && query.invalid">
+                <span *ngIf="query.errors.required">Запрос не заполнен</span>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Отмена</button>
+    <button type="submit" mat-raised-button color="primary" [disabled]="!variableForm.form.valid">Сохранить</button>
+  </div>
+</form>

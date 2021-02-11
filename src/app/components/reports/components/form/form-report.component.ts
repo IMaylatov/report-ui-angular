@@ -1,19 +1,19 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DataSourceComponent } from 'src/app/components/data-source/data-source.component';
-import { DataSource } from 'src/app/components/data-source/shared/data-source.model';
 import { Report } from '../../shared/report.model';
 import { deepCopy } from '../../../../shared/utils/deep-copy';
 import { DataSetComponent } from 'src/app/components/data-set/data-set.component';
 import { DATASET_TYPE_SQLQUERY } from '../../shared/reportConst';
+import { VariableComponent } from 'src/app/components/variable/variable.component';
 
 @Component({
   selector: 'form-report',
   templateUrl: './form-report.component.html',
   styleUrls: ['./form-report.component.scss']
 })
-export class FormReportComponent implements OnInit {
+export class FormReportComponent {
   @Input() report: Report;
 
   @ViewChild('parameterMenuTrigger')
@@ -23,91 +23,73 @@ export class FormReportComponent implements OnInit {
   
   constructor(public dialog: MatDialog) { }
 
-  ngOnInit(): void {
-  }
-
   onSave(): void {
     console.log(this.report);
   }
 
-  onDataSourceAddClick() {    
-    const dialogRef = this.dialog.open(DataSourceComponent, 
-      { width: '800px', data: deepCopy({ id: 0, name: '', type: '', data: {}}) });
+  onElementAddClick(elemType: string) {
+    let modalComponent;
+    let modalItem;
+    switch (elemType) {
+      case 'dataSources': 
+        modalComponent = DataSourceComponent;
+        modalItem = { id: 0, name: '', type: '', data: {}};
+        break;
+      case 'dataSets': 
+        modalComponent = DataSetComponent;
+        modalItem = { id: 0, name: '', type: DATASET_TYPE_SQLQUERY.name, data: {}};
+        break;
+      case 'variables': 
+        modalComponent = VariableComponent;
+        modalItem = { id: 0, name: '', label: '', type: '', required: false, data: {}};
+        break;      
+    }
 
-    dialogRef.afterClosed().subscribe(dataSource => {
-      if (dataSource) {
-        this.report.dataSources.push(dataSource);
+    const dialogRef = this.dialog.open(modalComponent, 
+      { width: '800px', data: { report: this.report, item: modalItem }});
+      
+    dialogRef.afterClosed().subscribe(item => {
+      if (item) {
+        this.report[elemType].push(item);
       }
     });
   }
 
-  onDataSetAddClick() {
-    const dialogRef = this.dialog.open(DataSetComponent, {
-      width: '800px', data: { 
-        report: this.report, 
-        dataSet:  deepCopy({ id: 0, name: '', type: DATASET_TYPE_SQLQUERY.name, data: {}})
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(dataSet => {
-      if (dataSet) {
-        this.report.dataSets.push(dataSet);
-      }
-    });
-  }
-
-  onVariableAddClick() {
-
-  }
-
-  onContextMenu(event: MouseEvent, data: any) {
+  onContextMenu(event: MouseEvent, elemType: string, item: any) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { data };
+    this.contextMenu.menuData = { data: { elemType, item }};
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
   }
 
-  onElemEditClick(data: any) {
-    switch(data.elemType) {
-      case 'dataSource':
-        {
-          const dialogRef = this.dialog.open(DataSourceComponent, 
-            { width: '800px', data: deepCopy(data.item) });
-          dialogRef.afterClosed().subscribe(dataSource => {
-            if (dataSource) {
-              const dataSourceIndex = this.report.dataSources.indexOf(data.item);
-              this.report.dataSources[dataSourceIndex] = dataSource;
-            }
-          });
-        }
+  onElemEditClick(elemType: string, item: any) {
+    let modalComponent;
+    switch(elemType) {
+      case 'dataSources':
+        modalComponent = DataSourceComponent;
         break;
-      case 'dataSet':
-        {
-          const dialogRef = this.dialog.open(DataSetComponent, 
-            { width: '800px', data: { report: this.report, dataSet: deepCopy(data.item)} });
-          dialogRef.afterClosed().subscribe(dataSet => {
-            if (dataSet) {
-              const dataSetIndex = this.report.dataSets.indexOf(data.item);
-              this.report.dataSets[dataSetIndex] = dataSet;
-            }
-          });
-        }
+      case 'dataSets':
+        modalComponent = DataSetComponent;
+        break;
+      case 'variables':
+        modalComponent = VariableComponent;
         break;
     }
+
+    const dialogRef = this.dialog.open(modalComponent, 
+      { width: '800px', data: { report: this.report, item: deepCopy(item)} });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const itemIndex = this.report[elemType].indexOf(item);
+        this.report[elemType][itemIndex] = result;
+      }
+    });
   }
 
-  onElemDeleteClick(data: any) {
-    switch(data.elemType) {
-      case 'dataSource':
-        const dataSourceIndex = this.report.dataSources.indexOf(data.item);
-        this.report.dataSources.splice(dataSourceIndex, 1);
-        break;
-      case 'dataSource':
-        const dataSetIndex = this.report.dataSets.indexOf(data.item);
-        this.report.dataSets.splice(dataSetIndex, 1);
-        break;
-    }
+  onElemDeleteClick(elemType: string, item: any) {
+    const itemIndex = this.report[elemType].indexOf(item);
+    this.report[elemType].splice(itemIndex, 1);
   }
 }

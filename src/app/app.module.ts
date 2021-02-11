@@ -6,11 +6,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptorService } from './core/interceptors/auth-interceptor.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DataSetComponent } from './components/data-set/data-set.component';
+import { TableComponent } from './components/variable/table/table.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,
