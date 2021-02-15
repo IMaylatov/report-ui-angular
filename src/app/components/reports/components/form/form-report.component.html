@@ -1,19 +1,19 @@
 <header>
-  <div fxLayout="column" fxLayoutAlign="space-around" class="header-panel">
-    <div>
-      <input [(ngModel)]="report.name" class="name-field">
+  <div fxFlex fxLayout="column" fxLayoutGap="10px" class="header-panel">
+    <div fxFlex>
+      <input [(ngModel)]="report.name" fxFlex="50" class="name-field">
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
       <span class="header-report-type">{{report.type}}</span>  
-      <button mat-raised-button (click)="onSave()">Сохранить</button>
+      <button mat-raised-button (click)="onSave()" class="header-report-action-button">Сохранить</button>
     </div>
   </div>
 </header>
 
 <mat-drawer-container class="sidenav-container">
   <mat-drawer mode="side" opened>
-    <button mat-button [matMenuTriggerFor]="menu">Добавить элемент</button>
+    <button mat-button color="primary" [matMenuTriggerFor]="menu">Добавить элемент</button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="onElementAddClick('dataSources')">Источник данных</button>
       <button mat-menu-item (click)="onElementAddClick('dataSets')">Набор данных</button>
@@ -80,9 +80,9 @@
 
   </mat-drawer>
   <mat-drawer-content>
-    Main content
-    <mat-form-field >
-      <input matInput [(ngModel)]="report.name">
-    </mat-form-field>
+    <malibu-report *ngIf="report.type === reportTypeMalibu"
+      [report]="report"
+      [template]="template">
+    </malibu-report>
   </mat-drawer-content>
 </mat-drawer-container>

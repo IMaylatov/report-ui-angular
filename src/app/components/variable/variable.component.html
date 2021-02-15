@@ -1,11 +1,11 @@
-<form (ngSubmit)="onSubmit(variableForm.value)" #variableForm="ngForm">
+<form (ngSubmit)="onSubmit()" #variableForm="ngForm">
   <h1 mat-dialog-title>
     Параметр
   </h1>
   <mat-dialog-content>
     <div fxLayout="column" fxLayoutAlign="start">
-      <div fxLayout="column">
-        <mat-form-field>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <mat-form-field fxFlex="50">
           <mat-label>Наименование</mat-label>
           <input matInput [(ngModel)]="variable.name" name="name" required #name="ngModel">
           <mat-error *ngIf="name.touched && name.invalid">
@@ -13,7 +13,7 @@
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field fxFlex="50">
           <mat-label>Загаловок</mat-label>
           <input matInput [(ngModel)]="variable.label" name="label" required #label="ngModel">
           <mat-error *ngIf="label.touched && label.invalid">
@@ -22,21 +22,23 @@
         </mat-form-field>
       </div>
 
-      <mat-checkbox [(ngModel)]="variable.required" name="required" #type="ngModel" labelPosition="before">
-        Обязательный
-      </mat-checkbox>
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <mat-form-field fxFlex>
+          <mat-label>Тип</mat-label>
+          <mat-select [(ngModel)]="variable.type" (ngModelChange)="onVariableTypeChange($event)" name="type" required #type="ngModel">
+            <mat-option *ngFor="let variableType of variableTypes" [value]="variableType.name">
+              {{variableType.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="type.touched && type.invalid">
+            <span *ngIf="type.errors.required">Тип параметра не выбран</span>
+          </mat-error>
+        </mat-form-field>   
 
-      <mat-form-field>
-        <mat-label>Тип</mat-label>
-        <mat-select [(ngModel)]="variable.type" (ngModelChange)="onVariableTypeChange($event)" name="type" required #type="ngModel">
-          <mat-option *ngFor="let variableType of variableTypes" [value]="variableType.name">
-            {{variableType.label}}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="type.touched && type.invalid">
-          <span *ngIf="type.errors.required">Тип параметра не выбран</span>
-        </mat-error>
-      </mat-form-field>      
+        <mat-checkbox [(ngModel)]="variable.required" name="required" #type="ngModel" labelPosition="before">
+          Обязательный
+        </mat-checkbox>
+      </div>   
 
       <div *ngIf="variable.type === variableTypeSelect || variable.type === variableTypeMultipleSelect"
         ngModelGroup="data">
@@ -60,13 +62,13 @@
           </mat-form-field>
         </div>
         
-        <div fxLayout="row" fxLayoutGap="10px">
-          <mat-checkbox [(ngModel)]="variable.data.useTable" 
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <mat-checkbox [(ngModel)]="variable.data.useTable" (ngModelChange)="onUseTableChange($event)"
             name="useTable" #useTable="ngModel" labelPosition="before">
             Использовать табличное представление
           </mat-checkbox>
 
-          <button *ngIf="variable.data.useTable" mat-icon-button
+          <button *ngIf="variable.data.useTable" mat-icon-button color="primary"
             (click)="onTableSettingClick($event)">
             <mat-icon>settings</mat-icon>
           </button>

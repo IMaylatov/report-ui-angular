@@ -28,6 +28,8 @@ import {MatSelectModule} from '@angular/material/select';
 import { DataSetComponent } from '../data-set/data-set.component';
 import { VariableComponent } from '../variable/variable.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { VariableTableSettingsComponent } from '../variable/table-settings/variable-table-settings.component';
+import { MalibuReportComponent } from './components/malibu/malibu-report.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     FormReportComponent,
     DataSourceComponent,
     DataSetComponent,
-    VariableComponent
+    VariableComponent,
+    VariableTableSettingsComponent,
+    MalibuReportComponent
   ],
   imports: [
     CommonModule,

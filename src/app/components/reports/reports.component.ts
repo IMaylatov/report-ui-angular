@@ -18,8 +18,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private reportService: ReportService,
-    private router: Router) { 
+  constructor(private reportService: ReportService) { 
   }
 
   ngOnInit(): void {
@@ -39,8 +38,4 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   doFilter(value: string) {
     this.reports.filter = value.trim().toLocaleLowerCase();
   }
-
-  // onReportAddClick() {
-  //   this.router.navigate(['new'], { relativeTo: this.route });
-  // }
 }

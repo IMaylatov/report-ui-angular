@@ -1,0 +1,33 @@
+<div fxLayout="column" fxLayoutAlign="start" style="margin-top: 10px; margin-left: 10px;">
+  <div fxLayout="row" fxLayoutAlign="none center" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="none center">
+      <b>Шаблон: </b>
+      <span *ngIf="!template.data">Не выбран</span>
+      <span *ngIf="template.data">Файл.mlbrpt</span>
+      <button mat-button *ngIf="template.data" (click)="template.data = null">
+        <mat-icon color="accent">delete</mat-icon>
+      </button>
+    </div>
+
+    <button *ngIf="template.data" mat-raised-button (click)="download()">
+      <mat-icon>get_app</mat-icon>
+      <span>Скачать</span>
+    </button>
+
+    <button mat-raised-button (click)="fileInput.click()">
+      <span>Выбрать</span>
+      <input #fileInput type="file" (change)="onTemplateChange($event.target.files)" style="display:none;" />
+    </button>
+  </div>
+
+  <div *ngIf="template.data" fxLayout="row">
+    <div fxFlex="300px">
+      <mat-label>Тип отчета</mat-label>
+      <mat-select [(ngModel)]="reportType" (ngModelChange)="onReportTypeChange($event)" name="type" required #type="ngModel">
+        <mat-option [value]="variableTypeNone">Произвольный отчет</mat-option>
+        <mat-option [value]="variableTypeSelect">Отчет по документу</mat-option>
+        <mat-option [value]="variableTypeMultipliSelect">Отчет по набору документов</mat-option>
+      </mat-select>
+    </div>
+  </div>
+</div>

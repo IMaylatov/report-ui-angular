@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -7,6 +8,9 @@ import { deepCopy } from '../../../../shared/utils/deep-copy';
 import { DataSetComponent } from 'src/app/components/data-set/data-set.component';
 import { DATASET_TYPE_SQLQUERY } from '../../shared/reportConst';
 import { VariableComponent } from 'src/app/components/variable/variable.component';
+import { REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU } from '../../shared/reportConst';
+import { ReportService } from '../../shared/report.service';
+import { TemplateService } from '../../shared/template.service';
 
 @Component({
   selector: 'form-report',
@@ -14,17 +18,41 @@ import { VariableComponent } from 'src/app/components/variable/variable.componen
   styleUrls: ['./form-report.component.scss']
 })
 export class FormReportComponent {
+  reportTypeClosedXml = REPORT_TYPE_CLOSEDXML;
+  reportTypeMalibu = REPORT_TYPE_MALIBU;
+
   @Input() report: Report;
+  @Input() template: { id: number, data: any };
 
   @ViewChild('parameterMenuTrigger')
   contextMenu: MatMenuTrigger;
 
   contextMenuPosition = { x: '0px', y: '0px' };
   
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog,
+    public reportService: ReportService,
+    public templateService: TemplateService) { }
 
   onSave(): void {
-    console.log(this.report);
+    let reportOperation = this.report.id === 0
+        ? this.reportService.addReport(this.report)
+        : this.reportService.updateReport(this.report);
+    reportOperation.subscribe(report => {
+      if (this.template.id === 0) {
+        if (this.template.data !== null) {
+          this.templateService.addTemplate(report.id, this.template)
+            .subscribe(res => {});
+        }
+      } else {          
+        if (this.template.data !== null) {
+          this.templateService.updateTemplate(report.id, this.template.id, this.template.data)
+            .subscribe(res => {});
+        } else {
+          this.templateService.deleteTemplate(report.id, this.template.id)
+            .subscribe(res => {})
+        }
+      }
+    });
   }
 
   onElementAddClick(elemType: string) {

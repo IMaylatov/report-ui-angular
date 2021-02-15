@@ -19,4 +19,12 @@ export class ReportService {
   getReportById(reportId: number): Observable<Report> {
     return this.http.get<Report>(`${this.reportUrl}/${reportId}`);
   }
+
+  addReport(report: Report): Observable<Report> {
+    return this.http.post<Report>(`${this.reportUrl}`, report);
+  }
+
+  updateReport(report: Report): Observable<Report> {
+    return this.http.put<Report>(`${this.reportUrl}/${report.id}`, report);
+  }
 }
