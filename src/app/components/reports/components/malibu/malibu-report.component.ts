@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Report } from '../../shared/report.model';
 import { saveAs } from "file-saver";
 import { DATASET_TYPE_SQLQUERY, VARIABLE_TYPE_DATE, VARIABLE_TYPE_MULTIPLE_SELECT, VARIABLE_TYPE_PERIOD, VARIABLE_TYPE_SELECT } from '../../shared/reportConst';
@@ -9,7 +9,7 @@ import { encode, decode } from 'iconv-lite';
   templateUrl: './malibu-report.component.html',
   styleUrls: ['./malibu-report.component.scss']
 })
-export class MalibuReportComponent {
+export class MalibuReportComponent implements OnInit {
   @Input() report: Report;
   @Input() template: { id: number, data: any};
 
@@ -19,6 +19,15 @@ export class MalibuReportComponent {
 
   reportType: any;
 
+  ngOnInit(): void {    
+    const documentVariable = this.report.variables.find(x => x.name === 'Document');
+    if (documentVariable) {
+      this.reportType = documentVariable.type;
+    } else {
+      this.reportType = 'none';
+    }    
+  }
+
   onTemplateChange(files: FileList) {
     if (files.length > 0) {
       const file = files.item(0);
@@ -26,8 +35,13 @@ export class MalibuReportComponent {
       this.parseTemplate();
       this.reportType = this.variableTypeNone;
     } else {
-      this.template.data = null;
+      this.onDeleteTemplateClick();
     }
+  }
+
+  onDeleteTemplateClick() {
+    this.template.data = null;
+    this.deleteDocumentVariable();
   }
 
   download() {
@@ -97,10 +111,7 @@ export class MalibuReportComponent {
   }
 
   onReportTypeChange(reportType) {
-    const documentVariableIndex = this.report.variables.findIndex(x => x.name === 'Document');
-    if (documentVariableIndex !== -1) {
-      this.report.variables.splice(documentVariableIndex, 1);
-    }
+    this.deleteDocumentVariable();
 
     if (reportType !== 'none') {
       let variable = {
@@ -122,6 +133,13 @@ export class MalibuReportComponent {
         }
       }
       this.report.variables.push(variable);
+    }
+  }
+
+  deleteDocumentVariable() {
+    const documentVariableIndex = this.report.variables.findIndex(x => x.name === 'Document');
+    if (documentVariableIndex !== -1) {
+      this.report.variables.splice(documentVariableIndex, 1);
     }
   }
 }

@@ -26,6 +26,10 @@ export class AuthService {
 
   constructor() { 
     this._userManager = new UserManager(this.idpSettings);
+
+    this._userManager.events.addAccessTokenExpired(() => {
+      this._userManager.signinSilent();
+    });
   }
 
   public login = () => {

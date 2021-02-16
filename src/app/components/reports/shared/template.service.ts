@@ -30,7 +30,7 @@ export class TemplateService {
     const formData = new FormData();
       formData.append('template', template);
   
-    return this.http.post(`/api/reports/${reportId}/templates/templateId`, formData);
+    return this.http.put(`/api/reports/${reportId}/templates/${templateId}`, formData);
   }
 
   deleteTemplate(reportId: number, templateId: number) {

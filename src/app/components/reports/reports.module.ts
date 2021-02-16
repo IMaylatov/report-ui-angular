@@ -30,6 +30,10 @@ import { VariableComponent } from '../variable/variable.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { VariableTableSettingsComponent } from '../variable/table-settings/variable-table-settings.component';
 import { MalibuReportComponent } from './components/malibu/malibu-report.component';
+import { RunReportComponent } from './components/run/run-report.component';
+import { InputFactoryRunReportComponent } from './components/run/input-factory-run-report.component';
+import { SelectInputRunReportComponent } from './components/run/select-input-run-report.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -42,7 +46,10 @@ import { MalibuReportComponent } from './components/malibu/malibu-report.compone
     DataSetComponent,
     VariableComponent,
     VariableTableSettingsComponent,
-    MalibuReportComponent
+    MalibuReportComponent,
+    RunReportComponent,
+    InputFactoryRunReportComponent,
+    SelectInputRunReportComponent
   ],
   imports: [
     CommonModule,
@@ -71,6 +78,7 @@ import { MalibuReportComponent } from './components/malibu/malibu-report.compone
     ReactiveFormsModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
     
     FlexLayoutModule
   ]

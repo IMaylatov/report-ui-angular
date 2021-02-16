@@ -27,4 +27,18 @@ export class ReportService {
   updateReport(report: Report): Observable<Report> {
     return this.http.put<Report>(`${this.reportUrl}/${report.id}`, report);
   }
+
+  deleteReport(report: Report) {
+    return this.http.delete(`${this.reportUrl}/${report.id}`);
+  }
+
+  runReport(report: Report, template: any, context: any) {
+    const formData = new FormData();
+    
+    formData.append('report', JSON.stringify(report));
+    formData.append('template', template.data);
+    formData.append('context', JSON.stringify(context));
+  
+    return this.http.post('/api/run/report', formData, {responseType: 'blob'});
+  }
 }

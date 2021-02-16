@@ -35,6 +35,14 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       .subscribe(reports => this.reports.data = reports);
   }
 
+  onDeleteReportClick(report) {
+    this.reportService.deleteReport(report)
+      .subscribe(() => {
+        const reportIndex = this.reports.data.indexOf(report);
+        this.reports.data.splice(reportIndex, 1);
+      });
+  }
+
   doFilter(value: string) {
     this.reports.filter = value.trim().toLocaleLowerCase();
   }

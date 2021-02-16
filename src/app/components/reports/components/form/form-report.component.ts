@@ -11,6 +11,7 @@ import { VariableComponent } from 'src/app/components/variable/variable.componen
 import { REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU } from '../../shared/reportConst';
 import { ReportService } from '../../shared/report.service';
 import { TemplateService } from '../../shared/template.service';
+import { RunReportComponent } from '../run/run-report.component';
 
 @Component({
   selector: 'form-report',
@@ -40,7 +41,7 @@ export class FormReportComponent {
     reportOperation.subscribe(report => {
       if (this.template.id === 0) {
         if (this.template.data !== null) {
-          this.templateService.addTemplate(report.id, this.template)
+          this.templateService.addTemplate(report.id, this.template.data)
             .subscribe(res => {});
         }
       } else {          
@@ -52,6 +53,14 @@ export class FormReportComponent {
             .subscribe(res => {})
         }
       }
+    });
+  }
+
+  onRun() {
+    const dialogRef = this.dialog.open(RunReportComponent, 
+      { width: '800px', data: { report: this.report, template: this.template }});
+      
+    dialogRef.afterClosed().subscribe(item => {
     });
   }
 

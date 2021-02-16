@@ -4,7 +4,7 @@
       <b>Шаблон: </b>
       <span *ngIf="!template.data">Не выбран</span>
       <span *ngIf="template.data">Файл.mlbrpt</span>
-      <button mat-button *ngIf="template.data" (click)="template.data = null">
+      <button mat-button *ngIf="template.data" (click)="onDeleteTemplateClick()">
         <mat-icon color="accent">delete</mat-icon>
       </button>
     </div>
