@@ -58,7 +58,7 @@ export class FormReportComponent {
 
   onRun() {
     const dialogRef = this.dialog.open(RunReportComponent, 
-      { width: '800px', data: { report: this.report, template: this.template }});
+      { width: '600px', data: { report: this.report, template: this.template }});
       
     dialogRef.afterClosed().subscribe(item => {
     });

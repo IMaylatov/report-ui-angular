@@ -34,6 +34,7 @@ import { RunReportComponent } from './components/run/run-report.component';
 import { InputFactoryRunReportComponent } from './components/run/input-factory-run-report.component';
 import { SelectInputRunReportComponent } from './components/run/select-input-run-report.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { TableInputDialogComponent } from './components/run/table-input-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     MalibuReportComponent,
     RunReportComponent,
     InputFactoryRunReportComponent,
-    SelectInputRunReportComponent
+    SelectInputRunReportComponent,
+    TableInputDialogComponent
   ],
   imports: [
     CommonModule,

@@ -15,7 +15,7 @@ export class VariableService {
     formData.append('dataSet', JSON.stringify(dataSet));
     formData.append('pageSize', pageSize);
     formData.append('pageIndex', pageIndex);
-    formData.append('sortBy', JSON.stringify(sortBy));
+    formData.append('sortBy', sortBy);
     formData.append('filters', JSON.stringify(filters));
     
     return this.http.post(`/api/dataSet/data`, formData);

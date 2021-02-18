@@ -1,11 +1,13 @@
 import { DataSource } from 'src/app/components/data-source/shared/data-source.model';
-import { Variable } from '../../../variable/shared/variable.model';
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { VariableService } from '../../shared/variable.service';
 import { Report } from '../../shared/report.model';
+import { MatDialog } from '@angular/material/dialog';
+import { TableInputDialogComponent } from './table-input-dialog.component';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'select-input-run-report',
@@ -17,6 +19,9 @@ import { Report } from '../../shared/report.model';
             matInput
             [formControl]="autocompleteControl"
             [matAutocomplete]="auto">
+      <button mat-icon-button matSuffix (click)="onMoreClick()">
+        <mat-icon>more_horiz</mat-icon>
+      </button>
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event.option.value)">
         <mat-option *ngFor="let option of (filteredOptions | async)?.data" [value]="option">
           {{option[variable.data.captionField]}}
@@ -35,7 +40,8 @@ export class SelectInputRunReportComponent implements OnInit {
   dataSource: DataSource;
   context: any;
 
-  constructor(private variableService: VariableService) { }
+  constructor(private dialog: MatDialog,
+              private variableService: VariableService) { }
 
   ngOnInit() {
     this.dataSource = this.report.dataSources.find(x => x.name === this.variable.data.dataSet.data.dataSourceName);
@@ -66,5 +72,21 @@ export class SelectInputRunReportComponent implements OnInit {
     } else {
       delete this.variable.value;
     }
+  }
+
+  onMoreClick() {
+    const dialogRef = this.dialog.open(TableInputDialogComponent, 
+      { 
+        width: '800px', 
+        data: {  
+          report: this.report,
+          variable: this.variable,
+          context: this.context
+        },
+        autoFocus: false
+      });
+      
+    dialogRef.afterClosed().subscribe(item => {
+    });
   }
 }

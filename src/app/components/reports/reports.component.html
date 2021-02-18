@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <div class="mat-elevation-z8">
+    <div>
       <table mat-table [dataSource]="reports" matSort>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Наименование </th>
@@ -35,8 +35,6 @@
               <button mat-menu-item (click)="onDeleteReportClick(element)">Удалить</button>
             </mat-menu>
           </td>
-          
-
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
