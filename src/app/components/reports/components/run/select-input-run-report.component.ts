@@ -7,19 +7,17 @@ import { VariableService } from '../../shared/variable.service';
 import { Report } from '../../shared/report.model';
 import { MatDialog } from '@angular/material/dialog';
 import { TableInputDialogComponent } from './table-input-dialog.component';
-import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'select-input-run-report',
   template: `
-    <mat-form-field>
+    <mat-form-field style="width: 100%">
       <mat-label>{{variable.label}}</mat-label>
       <input type="text"
-            aria-label="variable.label"
-            matInput
+            matInput 
             [formControl]="autocompleteControl"
             [matAutocomplete]="auto">
-      <button mat-icon-button matSuffix (click)="onMoreClick()">
+      <button mat-icon-button matSuffix (click)="onMoreClick($event)">
         <mat-icon>more_horiz</mat-icon>
       </button>
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event.option.value)">
@@ -33,6 +31,7 @@ import { MatPaginator } from '@angular/material/paginator';
 export class SelectInputRunReportComponent implements OnInit {
   @Input() report: Report;
   @Input() variable: any;
+  @Input() multiple: boolean = false;
   
   autocompleteControl = new FormControl();
   filteredOptions: Observable<any>;
@@ -74,19 +73,33 @@ export class SelectInputRunReportComponent implements OnInit {
     }
   }
 
-  onMoreClick() {
+  onMoreClick(e) {
+    e.preventDefault();
+    
     const dialogRef = this.dialog.open(TableInputDialogComponent, 
       { 
         width: '800px', 
         data: {  
           report: this.report,
           variable: this.variable,
-          context: this.context
+          context: this.context,
+          multiple: this.multiple
         },
         autoFocus: false
       });
       
-    dialogRef.afterClosed().subscribe(item => {
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        if (!this.multiple) {
+          if (res.length > 0) {
+            this.variable.value = res[0];
+            this.autocompleteControl.setValue(res[0]);
+          } else {
+            this.variable.value = null;
+            this.autocompleteControl.setValue(null);
+          }
+        }
+      }
     });
   }
 }

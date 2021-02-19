@@ -1,3 +1,4 @@
+import { deepCopy } from './../../../../shared/utils/deep-copy';
 import { Template } from "@angular/compiler/src/render3/r3_ast";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -26,5 +27,9 @@ export class RunReportComponent {
 
     this.reportService.runReport(this.report, this.template, { userId: 1, variableValues: this.report.variables })
       .subscribe(data => saveAs(data, `${this.report.name}.xlsx`));
+  }
+
+  copyVariable(variable) {
+    return deepCopy(variable);
   }
 }

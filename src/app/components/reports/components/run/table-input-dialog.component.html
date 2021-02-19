@@ -1,0 +1,55 @@
+<h1>
+  Выбор параметров
+</h1>
+<mat-dialog-content>
+  <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+
+  <table mat-table [dataSource]="data"
+    matSort 
+    style="width: 100%;">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox *ngIf="multiple" 
+                      (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="onSelecteRowChange(row)"
+                      [checked]="isSelectedRow(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container *ngFor="let column of variable.data.table.columns; index as i;" [matColumnDef]="column.field">        
+      <th mat-header-cell *matHeaderCellDef >
+        <div fxLayout="column">
+          <div mat-sort-header>
+            {{column.title}}
+          </div>
+          <div>
+            <mat-form-field>
+              <input matInput [(ngModel)]="filters[i].value" #input>                  
+              <button mat-icon-button matSuffix (click)="onFilterClearClick(filters[i])">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-icon matSuffix>filter_alt</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let element">{{element[column.field]}}</td>
+    </ng-container>
+    
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> 
+  </table>
+
+  <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 30, 50]"></mat-paginator>
+</mat-dialog-content>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button mat-dialog-close>Отмена</button>
+  <button mat-raised-button color="primary" (click)="onSubmit($event)">Выбрать</button>
+</div>

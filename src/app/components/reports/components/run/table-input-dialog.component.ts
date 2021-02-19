@@ -8,55 +8,17 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import {fromEvent, merge, Observable, of as observableOf} from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'table-input-dialog',
-  template: `
-    <h1>
-      Выбор параметров
-    </h1>
-    <mat-dialog-content>
-      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-
-      <table mat-table [dataSource]="data"
-        matSort [matSortActive]="displayedColumns[0]" matSortDisableClear matSortDirection="desc"
-        style="width: 100%;">
-        <ng-container *ngFor="let column of variable.data.table.columns; index as i;" [matColumnDef]="column.field">        
-          <th mat-header-cell *matHeaderCellDef >
-            <div fxLayout="column">
-              <div mat-sort-header>
-                {{column.title}}
-              </div>
-              <div>
-                <mat-form-field>
-                  <input matInput [(ngModel)]="filters[i].value" #input>                  
-                  <button mat-icon-button matSuffix (click)="onFilterClearClick(filters[i])">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                  <mat-icon matSuffix>filter_alt</mat-icon>
-                </mat-form-field>
-              </div>
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let element">{{element[column.field]}}</td>
-        </ng-container>
-        
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> 
-      </table>
-
-      <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 30, 50]"></mat-paginator>
-    </mat-dialog-content>
-    <div mat-dialog-actions align="end">
-      <button mat-raised-button mat-dialog-close>Отмена</button>
-      <button mat-raised-button color="primary" (click)="onSubmit($event)">Выбрать</button>
-    </div>
-  `
+  templateUrl: './table-input-dialog.component.html',
 })
 export class TableInputDialogComponent implements OnInit, AfterViewInit {
   report: Report;
   variable: any;
   context: any;
+  multiple: boolean = false;
 
   dataSource: DataSource;
 
@@ -73,19 +35,27 @@ export class TableInputDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('input') input: ElementRef;
   
+  selection: SelectionModel<any>;
+  
   constructor(public dialogRef: MatDialogRef<TableInputDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
     private variableService: VariableService) { 
       this.report = dialogData.report;
       this.variable = dialogData.variable;
       this.context = dialogData.context;
+      this.multiple = dialogData.multiple;
     }
 
   ngOnInit() {
     this.dataSource = this.report.dataSources.find(x => x.name === this.variable.data.dataSet.data.dataSourceName);
 
-    this.displayedColumns = this.variable.data.table.columns.map(x => x.field);
-    this.filters = this.displayedColumns.map(x => { return { id: x, value: ''}});
+    this.displayedColumns = ['select', ...this.variable.data.table.columns.map(x => x.field)];
+    this.filters = this.variable.data.table.columns.map(x => { return { id: x.field, value: ''}});
+    
+    const initialSelection = this.multiple 
+      ? (this.variable.value ? this.variable.value : []) 
+      : (this.variable.value ? [this.variable.value] : []);
+    this.selection = new SelectionModel<any>(this.multiple, initialSelection);
   }
 
   ngAfterViewInit() {
@@ -108,8 +78,9 @@ export class TableInputDialogComponent implements OnInit, AfterViewInit {
         switchMap(() => {
           this.isLoadingResults = true;
           const filters = this.filters.filter(x => x.value);
+          const sortBy = this.sort.active ? `${this.sort.active} ${this.sort.direction}` : '';
           return this.variableService.getRecordDatas(this.dataSource, this.context, this.variable.data.dataSet, 
-            this.paginator.pageSize, this.paginator.pageIndex, `${this.sort.active} ${this.sort.direction}`, filters);
+            this.paginator.pageSize, this.paginator.pageIndex, sortBy, filters);
         }),
         map((res: any) => {
           this.isLoadingResults = false;
@@ -132,7 +103,35 @@ export class TableInputDialogComponent implements OnInit, AfterViewInit {
     this.paginator.page.emit();
   }
 
+  isAllSelected() {
+    return  this.data.every(x => 
+      this.selection.selected.some(d => x[this.variable.data.keyField] === d[this.variable.data.keyField]));
+  }
+
+  masterToggle() {
+    this.isAllSelected() ?
+      this.data.forEach(row => this.selection.deselect(row)) :
+      this.data.forEach(row => this.selection.select(row));
+  }
+
+  onSelecteRowChange(row) {
+    const indexSelectedRow = this.selection.selected
+      .findIndex(x => x[this.variable.data.keyField] === row[this.variable.data.keyField]);
+    if (indexSelectedRow !== -1) {
+      this.selection.selected.splice(indexSelectedRow, 1);
+    } else {
+      if (!this.multiple) {
+        this.selection.clear();
+      }
+      this.selection.selected.push(row);
+    }
+  }
+
+  isSelectedRow(row) {
+    return this.selection.selected.some(x => x[this.variable.data.keyField] === row[this.variable.data.keyField]);
+  }
+
   onSubmit(e) {
-    e.preventDefault();
+    this.dialogRef.close(this.selection.selected);
   }
 }
