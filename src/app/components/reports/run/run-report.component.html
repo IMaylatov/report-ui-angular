@@ -1,0 +1,16 @@
+<header></header>
+
+<div *ngIf="report" fxLayout="row" fxLayoutAlign="space-around center" >
+  <div fxFlex="90" fxLayout="column" fxLayoutGap="10px">
+    <h1>{{report.name}}</h1>
+    <div>
+      <ng-container *ngFor="let variable of variables">
+        <input-factory-report [report]="report" [variable]="variable">
+        </input-factory-report>
+      </ng-container>
+      <div mat-dialog-actions align="end">
+        <button mat-raised-button color="primary" (click)="onRunClick()">Сформировать отчет</button>
+      </div>
+    </div>
+  </div>
+</div>

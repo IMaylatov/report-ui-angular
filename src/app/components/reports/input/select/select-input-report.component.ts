@@ -70,12 +70,14 @@ export class SelectInputReportComponent implements OnInit {
       });
       
     dialogRef.afterClosed().subscribe(res => {
-      if (res && res.length > 0) {
-        this.variable.value = res[0];
-        this.autocompleteControl.setValue(res[0]);
-      } else {
-        this.variable.value = null;
-        this.autocompleteControl.setValue(null);
+      if (res) {
+        if (res.length > 0) {
+          this.variable.value = res[0];
+          this.autocompleteControl.setValue(res[0]);
+        } else {
+          this.variable.value = null;
+          this.autocompleteControl.setValue(null);
+        }
       }
     });
   }

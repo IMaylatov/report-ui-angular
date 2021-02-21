@@ -40,6 +40,7 @@ import { SelectInputReportComponent } from './input/select/select-input-report.c
 import { TableDialogInputReportComponent } from './input/table-dialog/table-dialog-input-report.component';
 import { PerionInputReportComponent } from './input/period/period-input-report.component';
 import { MultipleSelectInputReportComponent } from './input/multiple-select/multiple-select-input-report.component';
+import { RunReportComponent } from './run/run-report.component';
 
 @NgModule({
   declarations: [
@@ -58,14 +59,16 @@ import { MultipleSelectInputReportComponent } from './input/multiple-select/mult
     SelectInputReportComponent,
     TableDialogInputReportComponent,
     PerionInputReportComponent,
-    MultipleSelectInputReportComponent
+    MultipleSelectInputReportComponent,
+    RunReportComponent
   ],
   imports: [
     CommonModule,
     RouterModule.forChild([
       { path: '', component: ReportsComponent },
       { path: 'new', component: NewReportComponent },
-      { path: ':id', component: DetailReportComponent }
+      { path: ':id', component: DetailReportComponent },
+      { path: 'run/:id', component: RunReportComponent }
     ]),
     
     MatTableModule,
