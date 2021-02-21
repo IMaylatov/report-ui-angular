@@ -11,35 +11,35 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from "@angular/material/icon";
-import { DetailReportComponent } from './components/detail/detail-report.component';
+import { DetailReportComponent } from './detail/detail-report.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HeaderComponent } from 'src/app/shared/components/header/header.component';
+import { HeaderComponent } from 'src/app/components/header/header.component';
 import { ReportsComponent } from './reports.component';
-import { NewReportComponent } from './components/new/new-report.component';
-import { FormReportComponent } from './components/form/form-report.component';
 import {MatDialogModule} from '@angular/material/dialog';
-import { DataSourceComponent } from '../data-source/data-source.component';
 import {MatSelectModule} from '@angular/material/select';
-import { DataSetComponent } from '../data-set/data-set.component';
-import { VariableComponent } from '../variable/variable.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import { VariableTableSettingsComponent } from '../variable/table-settings/variable-table-settings.component';
-import { MalibuReportComponent } from './components/malibu/malibu-report.component';
-import { RunReportComponent } from './components/run/run-report.component';
-import { InputFactoryRunReportComponent } from './components/run/input-factory-run-report.component';
-import { SelectInputRunReportComponent } from './components/run/select-input-run-report.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import { TableInputDialogComponent } from './components/run/table-input-dialog.component';
-import { PerionInputRunReportComponent } from './components/run/period-input-run-report.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import {MatChipsModule} from '@angular/material/chips';
-import { MultipleSelectInputRunReportComponent } from './components/run/multiple-select-input-run-report.component';
+import { NewReportComponent } from './new/new-report.component';
+import { FormReportComponent } from './form/form-report.component';
+import { DataSourceDialogReportComponent } from './data-source-dialog/data-source-dialog-report.component';
+import { DataSetDialogReportComponent } from './data-set-dialog/data-set-dialog-report.component';
+import { VariableDialogReportComponent } from './variable-dialog/variable-dialog-report.component';
+import { VariableDialogTableSettingsReportComponent } from './variable-dialog/table-settings/variable-dialog-table-settings-report.component';
+import { MalibuReportComponent } from './malibu/malibu-report.component';
+import { RunDialogReportComponent } from './run-dialog/run-dialog-report.component';
+import { InputFactoryReportComponent } from './input/factory/input-factory-report.component';
+import { SelectInputReportComponent } from './input/select/select-input-report.component';
+import { TableDialogInputReportComponent } from './input/table-dialog/table-dialog-input-report.component';
+import { PerionInputReportComponent } from './input/period/period-input-report.component';
+import { MultipleSelectInputReportComponent } from './input/multiple-select/multiple-select-input-report.component';
 
 @NgModule({
   declarations: [
@@ -48,17 +48,17 @@ import { MultipleSelectInputRunReportComponent } from './components/run/multiple
     HeaderComponent,
     DetailReportComponent,
     FormReportComponent,
-    DataSourceComponent,
-    DataSetComponent,
-    VariableComponent,
-    VariableTableSettingsComponent,
+    DataSourceDialogReportComponent,
+    DataSetDialogReportComponent,
+    VariableDialogReportComponent,
+    VariableDialogTableSettingsReportComponent,
     MalibuReportComponent,
-    RunReportComponent,
-    InputFactoryRunReportComponent,
-    SelectInputRunReportComponent,
-    TableInputDialogComponent,
-    PerionInputRunReportComponent,
-    MultipleSelectInputRunReportComponent
+    RunDialogReportComponent,
+    InputFactoryReportComponent,
+    SelectInputReportComponent,
+    TableDialogInputReportComponent,
+    PerionInputReportComponent,
+    MultipleSelectInputReportComponent
   ],
   imports: [
     CommonModule,

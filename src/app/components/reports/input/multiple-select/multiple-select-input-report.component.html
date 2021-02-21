@@ -1,0 +1,32 @@
+<mat-form-field style="width: 100%">
+  <mat-label>{{variable.label}}</mat-label>
+  <mat-chip-list #chipList>
+    <mat-chip
+      *ngFor="let item of variable.value"
+      [selectable]="true"
+      [removable]="true"
+      (removed)="remove(item)">
+      {{item[variable.data.captionField]}}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+    <input
+      #itemInput
+      [formControl]="itemControl"
+      [matAutocomplete]="auto"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      (matChipInputTokenEnd)="add($event)">
+    <button *ngIf="variable.data.useTable" mat-icon-button matSuffix (click)="onMoreClick($event)">
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <button mat-icon-button matSuffix>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+  </mat-chip-list>
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" 
+    (optionSelected)="selected($event.option.value)">
+    <mat-option *ngFor="let option of (filteredOptions | async)?.data" [value]="option">
+      {{option[variable.data.captionField]}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

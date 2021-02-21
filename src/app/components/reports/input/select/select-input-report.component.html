@@ -1,0 +1,18 @@
+<mat-form-field style="width: 100%">
+  <mat-label>{{variable.label}}</mat-label>
+  <input type="text"
+        matInput 
+        [formControl]="autocompleteControl"
+        [matAutocomplete]="auto">
+  <button *ngIf="variable.data.useTable" mat-icon-button matSuffix (click)="onMoreClick($event)">
+    <mat-icon>more_horiz</mat-icon>
+  </button>
+  <button mat-icon-button matSuffix>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event.option.value)">
+    <mat-option *ngFor="let option of (filteredOptions | async)?.data" [value]="option">
+      {{option[variable.data.captionField]}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
