@@ -1,13 +1,5 @@
-<h1>
-  Запуск отчета
-</h1>
-<mat-dialog-content>
-  <ng-container *ngFor="let variable of variables">
-    <input-factory-report [report]="report" [variable]="variable">
-    </input-factory-report>
-  </ng-container>
-</mat-dialog-content>
-<div mat-dialog-actions align="end">
-  <button mat-raised-button mat-dialog-close>Отмена</button>
-  <button mat-raised-button color="primary" (click)="onRunClick($event)">Сформировать отчет</button>
-</div>
+<run-form-report 
+  [report]="report" [context]="context"
+  (cancelClick)="onCancelClick()"
+  (runClick)="onRunClick($event)">
+</run-form-report>

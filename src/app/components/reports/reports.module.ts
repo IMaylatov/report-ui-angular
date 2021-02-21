@@ -41,6 +41,8 @@ import { TableDialogInputReportComponent } from './input/table-dialog/table-dial
 import { PerionInputReportComponent } from './input/period/period-input-report.component';
 import { MultipleSelectInputReportComponent } from './input/multiple-select/multiple-select-input-report.component';
 import { RunReportComponent } from './run/run-report.component';
+import { DateInputReportComponent } from './input/date/date-input-report.component';
+import { RunFormReportComponent } from './run-form/run-form-report.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +62,9 @@ import { RunReportComponent } from './run/run-report.component';
     TableDialogInputReportComponent,
     PerionInputReportComponent,
     MultipleSelectInputReportComponent,
-    RunReportComponent
+    RunReportComponent,
+    DateInputReportComponent,
+    RunFormReportComponent
   ],
   imports: [
     CommonModule,

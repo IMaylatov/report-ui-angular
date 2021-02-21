@@ -1,0 +1,21 @@
+<mat-form-field *ngIf="isNeedHost" fxFill>
+  <mat-label>Хост</mat-label>
+  <input matInput [(ngModel)]="context.host">
+</mat-form-field>
+
+<div *ngIf="!isNeedHost">
+  <ng-container *ngFor="let variable of variables">
+    <input-factory-report [report]="report" [variable]="variable" [context]="context">
+    </input-factory-report>
+  </ng-container>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+  <button mat-raised-button (click)="onCancelClick()">Отмена</button>
+
+  <button *ngIf="isNeedHost" mat-raised-button color="primary" (click)="onHostNextClick()">Далее</button>
+  
+  <button *ngIf="!isNeedHost"
+    mat-raised-button color="primary" 
+    (click)="onRunClick($event)">Сформировать отчет</button>
+</div>

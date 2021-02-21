@@ -1,7 +1,7 @@
 import { Template } from "@angular/compiler/src/render3/r3_ast";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver"
 import { Report } from "../shared/report.model";
 import { ReportService } from "../shared/report.service";
 
@@ -10,11 +10,10 @@ import { ReportService } from "../shared/report.service";
   templateUrl: './run-dialog-report.component.html',
   styleUrls: ['./run-dialog-report.component.scss']
 })
-export class RunDialogReportComponent implements OnInit {
+export class RunDialogReportComponent {
   report: Report;
   template: Template;
-
-  variables: any[] = [];
+  context: any = {};
 
   constructor(public dialogRef: MatDialogRef<RunDialogReportComponent>,
     private reportService: ReportService,
@@ -23,14 +22,12 @@ export class RunDialogReportComponent implements OnInit {
       this.template = data.template;
     }
 
-  ngOnInit(): void {
-    this.variables = this.reportService.getVariableValues(this.report);
+  onCancelClick() {
+    this.dialogRef.close();
   }
 
-  onRunClick(e) {
-    e.preventDefault();
-
-    this.reportService.runReport(this.report, this.template, { userId: 1, variableValues: this.variables })
-      .subscribe(data => saveAs(data, `${this.report.name}.xlsx`));
+  onRunClick(variableValues) {
+      this.reportService.runReport(this.report, this.template, { ...this.context, variableValues })
+        .subscribe(data => saveAs(data, `${this.report.name}.xlsx`));
   }
 }

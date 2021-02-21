@@ -1,6 +1,13 @@
-<select-input-report *ngIf="variable.type === 'select'" [report]="report" [variable]="variable" [context]="context">
-</select-input-report>
-<multiple-select-input-report *ngIf="variable.type === 'multipleSelect'" [report]="report" [variable]="variable" [context]="context">
-</multiple-select-input-report>
-<period-input-report *ngIf="variable.type === 'period'" [report]="report" [variable]="variable">
-</period-input-report>
+<container-element [ngSwitch]="variable.type">
+  <select-input-report *ngSwitchCase="variableTypeSelect" [report]="report" [variable]="variable" [context]="context">
+  </select-input-report>
+
+  <multiple-select-input-report *ngSwitchCase="variableTypeMultipleSelect" [report]="report" [variable]="variable" [context]="context">
+  </multiple-select-input-report>
+
+  <period-input-report *ngSwitchCase="variableTypePeriod" [report]="report" [variable]="variable">
+  </period-input-report> 
+
+  <date-input-report *ngSwitchCase="variableTypeDate" [report]="report" [variable]="variable">    
+  </date-input-report>
+</container-element>

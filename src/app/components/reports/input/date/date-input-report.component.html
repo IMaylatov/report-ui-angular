@@ -1,0 +1,6 @@
+<mat-form-field appearance="fill">
+  <mat-label>{{variable.label}}</mat-label>
+  <input matInput [matDatepicker]="beginPicker" [(ngModel)]="variable.value.beginDate" required>
+  <mat-datepicker-toggle matSuffix [for]="beginPicker"></mat-datepicker-toggle>
+  <mat-datepicker #beginPicker></mat-datepicker>
+</mat-form-field>
