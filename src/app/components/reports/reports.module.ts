@@ -35,6 +35,11 @@ import { InputFactoryRunReportComponent } from './components/run/input-factory-r
 import { SelectInputRunReportComponent } from './components/run/select-input-run-report.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { TableInputDialogComponent } from './components/run/table-input-dialog.component';
+import { PerionInputRunReportComponent } from './components/run/period-input-run-report.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatChipsModule} from '@angular/material/chips';
+import { MultipleSelectInputRunReportComponent } from './components/run/multiple-select-input-run-report.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +56,9 @@ import { TableInputDialogComponent } from './components/run/table-input-dialog.c
     RunReportComponent,
     InputFactoryRunReportComponent,
     SelectInputRunReportComponent,
-    TableInputDialogComponent
+    TableInputDialogComponent,
+    PerionInputRunReportComponent,
+    MultipleSelectInputRunReportComponent
   ],
   imports: [
     CommonModule,
@@ -81,6 +88,9 @@ import { TableInputDialogComponent } from './components/run/table-input-dialog.c
     MatSelectModule,
     MatCheckboxModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatChipsModule,
     
     FlexLayoutModule
   ]

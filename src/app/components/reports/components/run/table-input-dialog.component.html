@@ -8,7 +8,7 @@
     matSort 
     style="width: 100%;">
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef style="padding-right: 10px;">
         <mat-checkbox *ngIf="multiple" 
                       (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"

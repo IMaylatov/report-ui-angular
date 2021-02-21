@@ -2,8 +2,8 @@
   Запуск отчета
 </h1>
 <mat-dialog-content>
-  <ng-container *ngFor="let variable of report.variables">
-    <input-factory-run-report [report]="report" [variable]="copyVariable(variable)">
+  <ng-container *ngFor="let variable of variables">
+    <input-factory-run-report [report]="report" [variable]="variable">
     </input-factory-run-report>
   </ng-container>
 </mat-dialog-content>

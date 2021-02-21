@@ -1,8 +1,8 @@
 import { DataSource } from 'src/app/components/data-source/shared/data-source.model';
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { debounceTime, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
 import { VariableService } from '../../shared/variable.service';
 import { Report } from '../../shared/report.model';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,8 +17,11 @@ import { TableInputDialogComponent } from './table-input-dialog.component';
             matInput 
             [formControl]="autocompleteControl"
             [matAutocomplete]="auto">
-      <button mat-icon-button matSuffix (click)="onMoreClick($event)">
+      <button *ngIf="variable.data.useTable" mat-icon-button matSuffix (click)="onMoreClick($event)">
         <mat-icon>more_horiz</mat-icon>
+      </button>
+      <button mat-icon-button matSuffix>
+        <mat-icon>arrow_drop_down</mat-icon>
       </button>
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event.option.value)">
         <mat-option *ngFor="let option of (filteredOptions | async)?.data" [value]="option">
@@ -31,7 +34,6 @@ import { TableInputDialogComponent } from './table-input-dialog.component';
 export class SelectInputRunReportComponent implements OnInit {
   @Input() report: Report;
   @Input() variable: any;
-  @Input() multiple: boolean = false;
   
   autocompleteControl = new FormControl();
   filteredOptions: Observable<any>;
@@ -45,10 +47,12 @@ export class SelectInputRunReportComponent implements OnInit {
   ngOnInit() {
     this.dataSource = this.report.dataSources.find(x => x.name === this.variable.data.dataSet.data.dataSourceName);
     this.context = { userId: 1 };
-
+    
     this.filteredOptions = this.autocompleteControl.valueChanges
       .pipe(
+        startWith(''),
         debounceTime(300),
+        distinctUntilChanged(),
         switchMap(value => 
           this.variableService.getRecordDatas(
             this.dataSource, 
@@ -62,15 +66,11 @@ export class SelectInputRunReportComponent implements OnInit {
   }
 
   displayFn = value => {
-      if (value) { return value[this.variable.data.captionField]; }
+    if (value) { return value[this.variable.data.captionField]; }
   }
 
   onOptionSelected(option) {
-    if (option) {
-      this.variable.value = option;
-    } else {
-      delete this.variable.value;
-    }
+    this.variable.value = option;
   }
 
   onMoreClick(e) {
@@ -82,23 +82,18 @@ export class SelectInputRunReportComponent implements OnInit {
         data: {  
           report: this.report,
           variable: this.variable,
-          context: this.context,
-          multiple: this.multiple
+          context: this.context
         },
         autoFocus: false
       });
       
     dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        if (!this.multiple) {
-          if (res.length > 0) {
-            this.variable.value = res[0];
-            this.autocompleteControl.setValue(res[0]);
-          } else {
-            this.variable.value = null;
-            this.autocompleteControl.setValue(null);
-          }
-        }
+      if (res && res.length > 0) {
+        this.variable.value = res[0];
+        this.autocompleteControl.setValue(res[0]);
+      } else {
+        this.variable.value = null;
+        this.autocompleteControl.setValue(null);
       }
     });
   }

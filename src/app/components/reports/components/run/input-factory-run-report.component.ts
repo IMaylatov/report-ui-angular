@@ -7,6 +7,10 @@ import { Report } from '../../shared/report.model';
   template: `
     <select-input-run-report *ngIf="variable.type === 'select'" [report]="report" [variable]="variable">
     </select-input-run-report>
+    <multiple-select-input-run-report *ngIf="variable.type === 'multipleSelect'" [report]="report" [variable]="variable">
+    </multiple-select-input-run-report>
+    <period-input-run-report *ngIf="variable.type === 'period'" [report]="report" [variable]="variable">
+    </period-input-run-report>
   `
 })
 export class InputFactoryRunReportComponent {
