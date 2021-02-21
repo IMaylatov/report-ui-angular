@@ -10,4 +10,5 @@ import { Variable } from "../../shared/variable.model";
 export class InputFactoryReportComponent {
   @Input() report: Report;
   @Input() variable: Variable;
+  @Input() context: any;
 }

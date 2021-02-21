@@ -18,6 +18,7 @@ import { TableDialogInputReportComponent } from '../table-dialog/table-dialog-in
 export class MultipleSelectInputReportComponent implements OnInit {
   @Input() report: Report;
   @Input() variable: any;
+  @Input() context: any;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   itemControl = new FormControl();
@@ -26,14 +27,12 @@ export class MultipleSelectInputReportComponent implements OnInit {
   @ViewChild('itemInput') itemInput: ElementRef<HTMLInputElement>;
 
   dataSource: DataSource;
-  context: any;
 
   constructor(private dialog: MatDialog,
               private variableService: VariableService) { }
 
   ngOnInit() {
     this.dataSource = this.report.dataSources.find(x => x.name === this.variable.data.dataSet.data.dataSourceName);
-    this.context = { userId: 1 };
     
     this.filteredOptions = this.itemControl.valueChanges
       .pipe(

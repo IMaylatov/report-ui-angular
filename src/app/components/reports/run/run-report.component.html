@@ -3,9 +3,23 @@
 <div *ngIf="report" fxLayout="row" fxLayoutAlign="space-around center" >
   <div fxFlex="90" fxLayout="column" fxLayoutGap="10px">
     <h1>{{report.name}}</h1>
-    <div>
+
+    <div *ngIf="isNeedHost" fxLayout="column" fxLayoutGap="10px">
+      <div>
+        <mat-form-field>
+          <mat-label>Хост</mat-label>
+          <input matInput [(ngModel)]="context.host">
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-raised-button color="primary" (click)="onHostNextClick()">Далее</button>
+      </div>
+    </div>
+
+    <div *ngIf="!isNeedHost">
       <ng-container *ngFor="let variable of variables">
-        <input-factory-report [report]="report" [variable]="variable">
+        <input-factory-report [report]="report" [variable]="variable" [context]="context">
         </input-factory-report>
       </ng-container>
       <div mat-dialog-actions align="end">

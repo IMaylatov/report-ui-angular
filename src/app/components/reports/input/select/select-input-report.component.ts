@@ -16,19 +16,18 @@ import { TableDialogInputReportComponent } from "../table-dialog/table-dialog-in
 export class SelectInputReportComponent implements OnInit {
   @Input() report: Report;
   @Input() variable: any;
+  @Input() context: any;
   
   autocompleteControl = new FormControl();
   filteredOptions: Observable<any>;
 
   dataSource: DataSource;
-  context: any;
 
   constructor(private dialog: MatDialog,
               private variableService: VariableService) { }
 
   ngOnInit() {
     this.dataSource = this.report.dataSources.find(x => x.name === this.variable.data.dataSet.data.dataSourceName);
-    this.context = { userId: 1 };
     
     this.filteredOptions = this.autocompleteControl.valueChanges
       .pipe(
