@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/shared/service/notification.service';
 import { Subject } from 'rxjs';
 import { Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,7 +32,8 @@ export class FormReportComponent {
   
   constructor(public dialog: MatDialog,
     public reportService: ReportService,
-    public templateService: TemplateService) { }
+    public templateService: TemplateService,
+    private notificationService: NotificationService) { }
 
   onSave(): void {
     let reportOperation = this.report.id === 0
@@ -41,18 +43,22 @@ export class FormReportComponent {
       if (this.template.id === 0) {
         if (this.template.data !== null) {
           this.templateService.addTemplate(report.id, this.template.data)
-            .subscribe(res => {});
+            .subscribe(res => {},
+              err => this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`));
         }
       } else {          
         if (this.template.data !== null) {
           this.templateService.updateTemplate(report.id, this.template.id, this.template.data)
-            .subscribe(res => {});
+            .subscribe(res => {},
+              err => this.notificationService.showError(`Ошибка сохранения шаблона отчета. ${err.error.message}`));
         } else {
           this.templateService.deleteTemplate(report.id, this.template.id)
-            .subscribe(res => {})
+            .subscribe(res => {},
+              err => this.notificationService.showError(`Ошибка удаления шаблона отчета. ${err.error.message}`))
         }
       }
-    });
+    },
+    err => this.notificationService.showError(`Ошибка сохранения отчета. ${err.error.message}`));
   }
 
   onRun() {

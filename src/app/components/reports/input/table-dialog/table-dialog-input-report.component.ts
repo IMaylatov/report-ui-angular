@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/shared/service/notification.service';
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Report } from "../../shared/report.model";
@@ -39,7 +40,8 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
   
   constructor(public dialogRef: MatDialogRef<TableDialogInputReportComponent>,
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
-    private variableService: VariableService) { 
+    private variableService: VariableService,
+    private notificationService: NotificationService) { 
       this.report = dialogData.report;
       this.variable = dialogData.variable;
       this.context = dialogData.context;
@@ -89,7 +91,8 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
 
           return res.data;
         }),
-        catchError(() => {
+        catchError((err) => {
+          this.notificationService.showError(`Ошибка получения данных. ${err.error.message}`)
           this.isLoadingResults = false;
           this.isRateLimitReached = true;
           return observableOf([]);

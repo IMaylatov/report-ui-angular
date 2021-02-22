@@ -2,9 +2,9 @@ import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { ReportListItem } from './shared/report-list-item.model';
 import { ReportService } from './shared/report.service';
+import { NotificationService } from 'src/app/shared/service/notification.service';
 
 @Component({
   selector: 'reports',
@@ -18,7 +18,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private reportService: ReportService) { 
+  constructor(private reportService: ReportService,
+    private notificationService: NotificationService) { 
   }
 
   ngOnInit(): void {
@@ -32,7 +33,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   getReports() {
     this.reportService.getReports()
-      .subscribe(reports => this.reports.data = reports);
+      .subscribe(
+        reports => this.reports.data = reports,
+        err => this.notificationService.showError(`Ошибка получения списка отчетов. ${err.error.message}`));
   }
 
   onDeleteReportClick(report) {
@@ -40,7 +43,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       .subscribe(() => {
         const reportIndex = this.reports.data.indexOf(report);
         this.reports.data.splice(reportIndex, 1);
-      });
+      },
+      err => this.notificationService.showError(`Ошибка удаления отчета. ${err.error.message}`));
   }
 
   doFilter(value: string) {

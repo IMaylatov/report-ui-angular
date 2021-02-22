@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/shared/service/notification.service';
 import { saveAs } from 'file-saver';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,7 +19,8 @@ export class RunReportComponent implements OnInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute,
-    private reportService: ReportService) { 
+    private reportService: ReportService,
+    private notificationService: NotificationService) { 
     this.reportId = route.snapshot.params['id'];
   }
 
@@ -27,7 +29,8 @@ export class RunReportComponent implements OnInit {
       .subscribe(report => {
         this.report = report;
         this.variables = this.reportService.getVariableValues(this.report);
-      });
+      },
+      err => this.notificationService.showError(`Ошибка получения отчета. ${err.error.message}`));
   }
 
   onCancelClick() {
@@ -36,6 +39,7 @@ export class RunReportComponent implements OnInit {
 
   onRunClick(variableValues) {
     this.reportService.runReportByGuid(this.report.guid, { ...this.context, variableValues })
-      .subscribe(data => saveAs(data, `${this.report.name}.xlsx`));
+      .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
+        err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`));
   }
 }

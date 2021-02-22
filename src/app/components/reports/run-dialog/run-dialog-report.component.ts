@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/shared/service/notification.service';
 import { Template } from "@angular/compiler/src/render3/r3_ast";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -17,7 +18,8 @@ export class RunDialogReportComponent {
 
   constructor(public dialogRef: MatDialogRef<RunDialogReportComponent>,
     private reportService: ReportService,
-    @Inject(MAT_DIALOG_DATA) public data: { report: Report, template: Template }) { 
+    @Inject(MAT_DIALOG_DATA) public data: { report: Report, template: Template },
+    private notificationService: NotificationService) { 
       this.report = data.report;
       this.template = data.template;
     }
@@ -28,6 +30,7 @@ export class RunDialogReportComponent {
 
   onRunClick(variableValues) {
       this.reportService.runReport(this.report, this.template, { ...this.context, variableValues })
-        .subscribe(data => saveAs(data, `${this.report.name}.xlsx`));
+        .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
+          err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`));
   }
 }

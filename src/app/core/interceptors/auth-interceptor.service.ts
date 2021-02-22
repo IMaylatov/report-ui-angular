@@ -13,9 +13,8 @@ export class AuthInterceptorService implements HttpInterceptor {
   constructor(private _authService: AuthService, private _router: Router) { }
   
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if(true){
-      return from(
-        this._authService.getAccessToken()
+    return from(
+      this._authService.getAccessToken()
         .then(token => {
           const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
           const authRequest = req.clone({ headers });
@@ -25,14 +24,10 @@ export class AuthInterceptorService implements HttpInterceptor {
               if(err && (err.status === 401 || err.status === 403)){
                 this._router.navigate(['/unauthorized']);
               }
-              throw 'error in a request ' + err.status;
+              throw err;
             })
           ).toPromise();
         })
-      );
-    }
-    else {
-      return next.handle(req);
-    }
+    );
   }
 }

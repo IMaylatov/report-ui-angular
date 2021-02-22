@@ -1,3 +1,4 @@
+import { NotificationService } from 'src/app/shared/service/notification.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Report } from '../shared/report.model';
@@ -16,20 +17,25 @@ export class DetailReportComponent implements OnInit {
 
   constructor(private activateRoute: ActivatedRoute,
     private reportService: ReportService,
-    private templateService: TemplateService) { 
+    private templateService: TemplateService,
+    private notificationService: NotificationService) { 
     this.reportId = activateRoute.snapshot.params['id'];
   }
 
   ngOnInit(): void {
     this.reportService.getReportById(this.reportId)
-      .subscribe(report => this.report = report);
+      .subscribe(
+        report => this.report = report,
+        err => this.notificationService.showError(`Ошибка получения отчета. ${err.error.message}`));
 
     this.templateService.getTemplatesByReportId(this.reportId)
       .subscribe(templateItems => {
         if (templateItems.length > 0) {
           this.templateService.getTemplateData(this.reportId, templateItems[0].id)
-            .subscribe(blob => this.template = { id: templateItems[0].id, data: blob });
+            .subscribe(blob => this.template = { id: templateItems[0].id, data: blob },
+              err => this.notificationService.showError(`Ошибка получения шаблона отчета. ${err.error.message}`));
         }
-      })
+      },
+      err => this.notificationService.showError(`Ошибка получения списка шаблонов отчетов. ${err.error.message}`))
   }
 }
