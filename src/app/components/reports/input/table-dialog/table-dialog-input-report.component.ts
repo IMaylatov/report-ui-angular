@@ -30,7 +30,6 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
 
   resultsLength = 0;
   isLoadingResults = true;
-  isRateLimitReached = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -78,6 +77,7 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
       .pipe(
         startWith({}),
         switchMap(() => {
+          this.data = [];
           this.isLoadingResults = true;
           const filters = this.filters.filter(x => x.value);
           const sortBy = this.sort.active ? `${this.sort.active} ${this.sort.direction}` : '';
@@ -86,7 +86,6 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
         }),
         map((res: any) => {
           this.isLoadingResults = false;
-          this.isRateLimitReached = false;
           this.resultsLength = res.totalCount;
 
           return res.data;
@@ -94,7 +93,6 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
         catchError((err) => {
           this.notificationService.showError(`Ошибка получения данных. ${err.error.message}`)
           this.isLoadingResults = false;
-          this.isRateLimitReached = true;
           return observableOf([]);
         })
       ).subscribe(data => this.data = data);

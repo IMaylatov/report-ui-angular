@@ -2,8 +2,6 @@
   Выбор параметров
 </h1>
 <mat-dialog-content>
-  <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-
   <table mat-table [dataSource]="data"
     matSort 
     style="width: 100%;">
@@ -46,6 +44,10 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> 
   </table>
+      
+  <div *ngIf="isLoadingResults" fxLayout="row" fxLayoutAlign="space-around center">
+    <mat-spinner></mat-spinner>
+  </div>
 
   <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 30, 50]"></mat-paginator>
 </mat-dialog-content>

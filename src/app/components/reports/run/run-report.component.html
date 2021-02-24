@@ -1,10 +1,10 @@
 <header></header>
 
-<div fxLayout="row" fxLayoutAlign="space-around center" >
+<div *ngIf="report" fxLayout="row" fxLayoutAlign="space-around center" >
   <div fxFlex="70" fxLayout="column" fxLayoutGap="10px">
     <h1>{{report.name}}</h1>
 
-    <run-form-report *ngIf="report"
+    <run-form-report
       [report]="report" [context]="context"
       (cancelClick)="onCancelClick()"
       (runClick)="onRunClick($event)">

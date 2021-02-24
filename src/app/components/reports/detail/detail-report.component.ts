@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Report } from '../shared/report.model';
 import { ReportService } from '../shared/report.service';
 import { TemplateService } from '../shared/template.service';
+import { BackdropService } from 'src/app/shared/service/backdrop.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'detail-report',
@@ -11,31 +14,57 @@ import { TemplateService } from '../shared/template.service';
   styleUrls: ['./detail-report.component.scss']
 })
 export class DetailReportComponent implements OnInit {
+  private emptyTemplate = { id: 0, data: null};
+
   public reportId: number;
   public report: Report;
-  public template: { id: number, data: any } = { id: 0, data: null};
+  public template: { id: number, data: any } = this.emptyTemplate;
 
   constructor(private activateRoute: ActivatedRoute,
     private reportService: ReportService,
     private templateService: TemplateService,
-    private notificationService: NotificationService) { 
+    private notificationService: NotificationService,
+    public backdropService: BackdropService) { 
     this.reportId = activateRoute.snapshot.params['id'];
   }
 
   ngOnInit(): void {
-    this.reportService.getReportById(this.reportId)
-      .subscribe(
-        report => this.report = report,
-        err => this.notificationService.showError(`Ошибка получения отчета. ${err.error.message}`));
+    this.backdropService.open();
 
-    this.templateService.getTemplatesByReportId(this.reportId)
-      .subscribe(templateItems => {
-        if (templateItems.length > 0) {
-          this.templateService.getTemplateData(this.reportId, templateItems[0].id)
-            .subscribe(blob => this.template = { id: templateItems[0].id, data: blob },
-              err => this.notificationService.showError(`Ошибка получения шаблона отчета. ${err.error.message}`));
-        }
-      },
-      err => this.notificationService.showError(`Ошибка получения списка шаблонов отчетов. ${err.error.message}`))
+    forkJoin([
+      this.reportService.getReportById(this.reportId)
+        .pipe(
+          catchError(err => { 
+            this.notificationService.showError(`Ошибка получения отчета`);
+            return of(null);
+          })
+        ),
+      this.templateService.getTemplatesByReportId(this.reportId)
+        .pipe(
+          switchMap(templateItems => {
+            return templateItems.length > 0 ?
+              this.templateService.getTemplateData(this.reportId, templateItems[0].id)
+                .pipe(
+                  switchMap(blob => of({ id: templateItems[0].id, data: blob })),
+                  catchError(err => {
+                    this.notificationService.showError(`Ошибка получения шаблона отчета`);
+                    return of(this.emptyTemplate);
+                  })
+                )
+              : of(this.emptyTemplate);
+          }),
+          catchError(err => { 
+            this.notificationService.showError(`Ошибка получения списка шаблонов отчетов`);
+            return of(this.emptyTemplate);
+          })
+        )
+    ])
+      .pipe(
+        finalize(() => this.backdropService.close())
+      )
+      .subscribe(([report, template]) => {
+        this.report = report;
+        this.template = template;
+      });
   }
 }

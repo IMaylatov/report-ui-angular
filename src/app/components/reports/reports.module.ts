@@ -43,6 +43,7 @@ import { MultipleSelectInputReportComponent } from './input/multiple-select/mult
 import { RunReportComponent } from './run/run-report.component';
 import { DateInputReportComponent } from './input/date/date-input-report.component';
 import { RunFormReportComponent } from './run-form/run-form-report.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { RunFormReportComponent } from './run-form/run-form-report.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
     
     FlexLayoutModule
   ]

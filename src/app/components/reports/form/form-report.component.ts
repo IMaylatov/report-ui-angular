@@ -1,5 +1,7 @@
+import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { NotificationService } from 'src/app/shared/service/notification.service';
-import { Subject } from 'rxjs';
+import { of } from 'rxjs';
+import { Location } from '@angular/common';
 import { Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -12,6 +14,7 @@ import { VariableDialogReportComponent } from '../variable-dialog/variable-dialo
 import { DataSetDialogReportComponent } from '../data-set-dialog/data-set-dialog-report.component';
 import { DataSourceDialogReportComponent } from '../data-source-dialog/data-source-dialog-report.component';
 import { deepCopy } from 'src/app/shared/utils/deep-copy';
+import { BackdropService } from 'src/app/shared/service/backdrop.service';
 
 @Component({
   selector: 'form-report',
@@ -33,32 +36,60 @@ export class FormReportComponent {
   constructor(public dialog: MatDialog,
     public reportService: ReportService,
     public templateService: TemplateService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    public backdropService: BackdropService,
+    private location: Location) { }
 
   onSave(): void {
+    this.backdropService.open();
+
     let reportOperation = this.report.id === 0
-        ? this.reportService.addReport(this.report)
-        : this.reportService.updateReport(this.report);
-    reportOperation.subscribe(report => {
-      if (this.template.id === 0) {
-        if (this.template.data !== null) {
-          this.templateService.addTemplate(report.id, this.template.data)
-            .subscribe(res => {},
-              err => this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`));
+      ? this.reportService.addReport(this.report)
+          .pipe(
+            switchMap(report => {
+              this.report.id = report.id;
+              this.location.go(`/reports/${this.report.id}`);
+              return of(report);
+            })
+          )
+      : this.reportService.updateReport(this.report);
+
+    reportOperation.pipe(
+      switchMap(report => {
+        if (this.template.id === 0) {
+          if (this.template.data !== null) {
+            return this.templateService.addTemplate(report.id, this.template.data)
+              .pipe(
+                catchError(err => {
+                  this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`);
+                  return of(report);
+                })
+              )
+          } else {
+            return of(report);
+          }
+        } else {          
+          if (this.template.data !== null) {
+            return this.templateService.updateTemplate(report.id, this.template.id, this.template.data)
+              .pipe(
+                catchError(err => {
+                  this.notificationService.showError(`Ошибка сохранения шаблона отчета. ${err.error.message}`);
+                  return of(report);
+                })
+              )
+          } else {
+            return this.templateService.deleteTemplate(report.id, this.template.id)
+              .pipe(
+                catchError(err => {
+                  this.notificationService.showError(`Ошибка удаления шаблона отчета. ${err.error.message}`);
+                  return of(report);
+                })
+              )
+          }
         }
-      } else {          
-        if (this.template.data !== null) {
-          this.templateService.updateTemplate(report.id, this.template.id, this.template.data)
-            .subscribe(res => {},
-              err => this.notificationService.showError(`Ошибка сохранения шаблона отчета. ${err.error.message}`));
-        } else {
-          this.templateService.deleteTemplate(report.id, this.template.id)
-            .subscribe(res => {},
-              err => this.notificationService.showError(`Ошибка удаления шаблона отчета. ${err.error.message}`))
-        }
-      }
-    },
-    err => this.notificationService.showError(`Ошибка сохранения отчета. ${err.error.message}`));
+      }),
+      finalize(() => this.backdropService.close())
+    ).subscribe(res => {});
   }
 
   onRun() {

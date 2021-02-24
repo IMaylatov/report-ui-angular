@@ -5,6 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { saveAs } from "file-saver"
 import { Report } from "../shared/report.model";
 import { ReportService } from "../shared/report.service";
+import { BackdropService } from 'src/app/shared/service/backdrop.service';
 
 @Component({
   selector: 'run-dialog-report',
@@ -19,7 +20,8 @@ export class RunDialogReportComponent {
   constructor(public dialogRef: MatDialogRef<RunDialogReportComponent>,
     private reportService: ReportService,
     @Inject(MAT_DIALOG_DATA) public data: { report: Report, template: Template },
-    private notificationService: NotificationService) { 
+    private notificationService: NotificationService,
+    private backdropService: BackdropService) { 
       this.report = data.report;
       this.template = data.template;
     }
@@ -29,8 +31,11 @@ export class RunDialogReportComponent {
   }
 
   onRunClick(variableValues) {
-      this.reportService.runReport(this.report, this.template, { ...this.context, variableValues })
-        .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
-          err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`));
+    this.backdropService.open();
+
+    this.reportService.runReport(this.report, this.template, { ...this.context, variableValues })
+      .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
+        err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`),
+        () => this.backdropService.close());
   }
 }

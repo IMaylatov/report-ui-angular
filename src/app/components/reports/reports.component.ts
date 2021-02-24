@@ -5,6 +5,8 @@ import { MatSort } from '@angular/material/sort';
 import { ReportListItem } from './shared/report-list-item.model';
 import { ReportService } from './shared/report.service';
 import { NotificationService } from 'src/app/shared/service/notification.service';
+import { BackdropService } from 'src/app/shared/service/backdrop.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'reports',
@@ -12,18 +14,25 @@ import { NotificationService } from 'src/app/shared/service/notification.service
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit, AfterViewInit { 
-  displayedColumns: string[] = ['name', 'type', 'actions'];
+  displayedColumns: string[] = ['name', 'type', 'run', 'actions'];
   reports = new MatTableDataSource<ReportListItem>([]);
+  isLoading: boolean = false;
+
+  searchControl = new FormControl();
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private reportService: ReportService,
+  constructor(public backdropService: BackdropService,
+    private reportService: ReportService,
     private notificationService: NotificationService) { 
   }
 
   ngOnInit(): void {
     this.getReports();
+
+    this.searchControl.valueChanges
+      .subscribe(value => this.reports.filter = value);
   }
 
   ngAfterViewInit() {
@@ -32,22 +41,24 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   getReports() {
+    this.isLoading = true;
     this.reportService.getReports()
       .subscribe(
         reports => this.reports.data = reports,
-        err => this.notificationService.showError(`Ошибка получения списка отчетов. ${err.error.message}`));
+        err => this.notificationService.showError(`Ошибка получения списка отчетов. ${err.error.message}`),
+        () => this.isLoading = false);
   }
 
   onDeleteReportClick(report) {
+    this.backdropService.open();
+      
     this.reportService.deleteReport(report)
       .subscribe(() => {
         const reportIndex = this.reports.data.indexOf(report);
         this.reports.data.splice(reportIndex, 1);
+        this.reports._updateChangeSubscription();
       },
-      err => this.notificationService.showError(`Ошибка удаления отчета. ${err.error.message}`));
-  }
-
-  doFilter(value: string) {
-    this.reports.filter = value.trim().toLocaleLowerCase();
+      err => this.notificationService.showError(`Ошибка удаления отчета. ${err.error.message}`),
+      () => this.backdropService.close());
   }
 }
