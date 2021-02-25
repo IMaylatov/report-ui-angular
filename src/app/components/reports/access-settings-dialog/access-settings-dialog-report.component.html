@@ -1,0 +1,57 @@
+<form (ngSubmit)="onSubmit(accessSettingsForm.value)" #accessSettingsForm="ngForm">
+  <h1>Предоставьте доступ пользователям и группам</h1>
+
+  <mat-dialog-content fxLayout="column" fxLayoutAlign="start">
+    <mat-form-field fxFlex>
+      <mat-label>Идентификатор доступа</mat-label>
+      <input matInput [(ngModel)]="data.guid" name="guidInput" required #guidInput="ngModel">
+      <mat-error *ngIf="guidInput.touched && guidInput.invalid">
+        <span *ngIf="guidInput.errors.required">Идентификатор доступа не заполнен</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Добавьте Пользователя или роль</mat-label>
+      <input type="text"
+             matInput
+             [formControl]="searchControl"
+             required
+             [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)='onSelectedUserOrRole($event.option.value)'>
+          <mat-optgroup *ngIf="roles.length > 0" label="Роль">
+            <mat-option *ngFor="let role of roles" [value]="role">
+              {{role.name}}
+            </mat-option>
+        </mat-optgroup>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-list>
+      <div mat-subheader>Владелец</div>
+      <mat-list-item *ngIf="user">
+        <div mat-line>{{user.userName}}</div>
+      </mat-list-item>
+
+      <ng-container *ngIf="data.accessRoles.length > 0"> 
+        <mat-divider></mat-divider>     
+        <div mat-subheader>Роли</div>
+        <mat-list-item *ngFor="let role of data.accessRoles">
+          <div mat-line>{{role}}</div>
+        </mat-list-item>
+      </ng-container>
+      
+      <ng-container *ngIf="accessUsers.length > 0">  
+        <mat-divider></mat-divider>    
+        <div mat-subheader *ngIf="accessUsers.length > 0">Пользователи</div>
+        <mat-list-item *ngFor="let accessUser of accessUsers">
+          <div mat-line>{{accessUser.userName}}</div>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+  </mat-dialog-content>
+
+  <div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Отмена</button>
+    <button type="submit" mat-raised-button color="primary" [disabled]="!accessSettingsForm.form.valid">Сохранить</button>
+  </div>
+</form>

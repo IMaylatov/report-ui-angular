@@ -1,13 +1,18 @@
 <header>
-  <div fxFlex fxLayout="column" fxLayoutGap="10px" class="header-panel">
-    <div fxFlex>
-      <input [(ngModel)]="report.name" fxFlex="50" class="name-field">
-    </div>
+  <div fxFlex fxLayout="row" class="header-panel">
+    <div fxFlex fxLayout="column" fxLayoutGap="10px">
+      <div fxFlex>
+        <input [(ngModel)]="report.name" fxFlex="50" class="name-field">
+      </div>
 
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-      <span class="header-report-type">{{report.type}}</span>  
-      <button mat-raised-button (click)="onSave()" class="header-report-action-button">Сохранить</button>
-      <button mat-raised-button (click)="onRun()" class="header-report-action-button">Запустить</button>
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <span class="header-report-type">{{report.type}}</span>  
+        <button mat-raised-button (click)="onSave()" class="header-report-action-button">Сохранить</button>
+        <button mat-raised-button (click)="onRun()" class="header-report-action-button">Запустить</button>
+      </div>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <button mat-raised-button color="primary" (click)="onAccessSettingsClick()">Настройки доступа</button>
     </div>
   </div>
 </header>

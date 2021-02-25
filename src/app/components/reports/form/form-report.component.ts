@@ -15,6 +15,7 @@ import { DataSetDialogReportComponent } from '../data-set-dialog/data-set-dialog
 import { DataSourceDialogReportComponent } from '../data-source-dialog/data-source-dialog-report.component';
 import { deepCopy } from 'src/app/shared/utils/deep-copy';
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
+import { AccessSettingsDialogReportComponent } from '../access-settings-dialog/access-settings-dialog-report.component';
 
 @Component({
   selector: 'form-report',
@@ -164,5 +165,21 @@ export class FormReportComponent {
   onElemDeleteClick(elemType: string, item: any) {
     const itemIndex = this.report[elemType].indexOf(item);
     this.report[elemType].splice(itemIndex, 1);
+  }
+
+  onAccessSettingsClick() {
+    const dialogRef = this.dialog.open(AccessSettingsDialogReportComponent, {
+      width: '500px', 
+      data: deepCopy({ 
+        guid: this.report.guid,
+        authorId: this.report.authorId,
+        accessRoles: this.report.accessRoles,
+        accessUsers: this.report.accessUsers
+      })
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {       
+      }
+    });
   }
 }
