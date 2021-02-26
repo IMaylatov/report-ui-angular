@@ -6,7 +6,7 @@ import { UserService } from '../shared/user.service';
 import { RoleService } from '../shared/role.service';
 import { Role } from '../shared/role.model';
 import { FormControl } from '@angular/forms';
-import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { finalize, map, startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'access-settings-dialog-report',
@@ -14,13 +14,19 @@ import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
   styleUrls: ['./access-settings-dialog-report.component.scss']
 })
 export class AccessSettingsDialogReportComponent implements OnInit {
+  guid; string;
   user: User;
   accessUsers: User[] = [];
+  accessRoles: string[] = [];
+
+  isLoading: boolean = false;
   
-  sourceRoles: Role[] = [];
+  roles: Role[] = [];
+  users: User[] = [];
   
   searchControl = new FormControl();
-  roles: Role[] = [];
+  filteredRoles: string[] = [];
+  filteredUsers: User[] = [];
 
   constructor(public dialogRef: MatDialogRef<AccessSettingsDialogReportComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { guid: string, authorId: string, accessRoles: string[], accessUsers: string[] },
@@ -28,47 +34,66 @@ export class AccessSettingsDialogReportComponent implements OnInit {
     private roleService: RoleService) { 
     }
 
-  ngOnInit(): void { 
-    
-    this.userService.getUserById(this.data.authorId)
-      .subscribe(user => this.user = user);
+  ngOnInit(): void {   
+    this.isLoading = true;
 
-    forkJoin(
-      this.data.accessUsers.map(userId => this.userService.getUserById(userId))
-    ).subscribe(users => this.accessUsers = users);
+    forkJoin([
+      this.userService.getUserById(this.data.authorId),
+      forkJoin(this.data.accessUsers.map(userId => this.userService.getUserById(userId))),
+      this.roleService.getRoles()
+    ]).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe(values => {
+      this.guid = this.data.guid;
+      this.user = values[0];
+      this.accessUsers = values[1];
+      this.accessRoles = this.data.accessRoles;
+      this.roles = values[2];
 
-    this.roleService.getRoles()
-      .subscribe(roles => {
-        this.sourceRoles = roles;
-        this.roles = roles.filter(role => !this.data.accessRoles.some(r => r === role.name));
-      });
-
-    this.searchControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this.filterRole(value))
-      ).subscribe(res => {
-        this.roles = res;
-        console.log(res);
-      });
+      this.searchControl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this.roles.filter(role => role.name.includes(value)).slice(0, 5))
+        ).subscribe(roles => this.filteredRoles = roles.map(x => x.name));
+      this.searchControl.valueChanges
+        .pipe(
+          startWith(''),
+          switchMap(value => this.userService.getUsers(value, 5))
+        ).subscribe(users => this.filteredUsers = users);
+    });
   }
 
   onSelectedUserOrRole(option) {
-    this.data.accessRoles = [...this.data.accessRoles, option.name];
+    switch(option.type) {
+      case 'role':
+        if (!this.accessRoles.some(x => x === option.value)) {
+          this.accessRoles = [...this.accessRoles, option.value];
+        }
+        break;
+      case 'user':
+        if (!this.accessUsers.some(x => x.id === option.value.id) && this.user.id !== option.value.id) {
+          this.accessUsers = [...this.accessUsers, option.value];
+        }
+        break;
+    }    
     this.searchControl.reset();
   }
 
-  filterRole(value: string): Role[] {
-    if (value) {
-      return this.sourceRoles
-        .filter(role => !this.data.accessRoles.some(r => r === role.name))
-        .filter(role => role.name.includes(value));
-    }
-
-    return this.sourceRoles;
+  onRemoveRole(role: string) {
+    const roleIndex = this.accessRoles.indexOf(role);
+    this.accessRoles.splice(roleIndex, 1);
   }
 
-  onSubmit(form: any) {
-    console.log(form);
+  onRemoveUser(user: User) {
+    const userIndex = this.accessUsers.findIndex(x => user.id === x.id);
+    this.accessUsers.splice(userIndex, 1);
+  }
+
+  onSubmit() {
+    this.dialogRef.close({
+      guid: this.guid,
+      accessRoles: this.accessRoles,
+      accessUsers: this.accessUsers.map(x => x.id)
+    });
   }
 }

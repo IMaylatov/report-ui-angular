@@ -177,8 +177,11 @@ export class FormReportComponent {
         accessUsers: this.report.accessUsers
       })
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {       
+    dialogRef.afterClosed().subscribe(data => {
+      if (data) {       
+        this.report.guid = data.guid;
+        this.report.accessRoles = data.accessRoles;
+        this.report.accessUsers = data.accessUsers;
       }
     });
   }
