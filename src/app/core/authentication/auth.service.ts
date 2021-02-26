@@ -77,7 +77,7 @@ export class AuthService {
   public checkIfUserIsAdmin = (): Promise<boolean> => {
     return this._userManager.getUser()
     .then(user => {
-      return user?.profile.role === 'Admin';
+      return user?.profile.role === 'admin' || user?.profile.role.includes('admin');
     })
   }
 

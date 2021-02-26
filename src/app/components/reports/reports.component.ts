@@ -7,6 +7,7 @@ import { ReportService } from './shared/report.service';
 import { NotificationService } from 'src/app/shared/service/notification.service';
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
 import { FormControl } from '@angular/forms';
+import { AuthService } from 'src/app/core/authentication/auth.service';
 
 @Component({
   selector: 'reports',
@@ -14,9 +15,11 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit, AfterViewInit { 
-  displayedColumns: string[] = ['name', 'type', 'run', 'actions'];
+  displayedColumns: string[] = ['name', 'type', 'run'];
   reports = new MatTableDataSource<ReportListItem>([]);
   isLoading: boolean = false;
+
+  userIsAdmin: boolean = false;
 
   searchControl = new FormControl();
 
@@ -25,10 +28,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   constructor(public backdropService: BackdropService,
     private reportService: ReportService,
-    private notificationService: NotificationService) { 
+    private notificationService: NotificationService,
+    private authService: AuthService) { 
   }
 
   ngOnInit(): void {
+    this.authService.checkIfUserIsAdmin()
+      .then(userIsAdmin => {
+        this.userIsAdmin = userIsAdmin;
+        if (userIsAdmin) {
+          this.displayedColumns = ['name', 'type', 'run', 'actions'];
+        } else {
+          this.displayedColumns = ['name', 'run'];
+        }
+      })
+
     this.getReports();
 
     this.searchControl.valueChanges
