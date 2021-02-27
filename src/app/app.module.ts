@@ -10,10 +10,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BackdropComponent } from './components/backdrop/backdrop.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { SigninHostComponent } from './components/signin-host/signin-host.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    SigninHostComponent,
     BackdropComponent
   ],
   imports: [

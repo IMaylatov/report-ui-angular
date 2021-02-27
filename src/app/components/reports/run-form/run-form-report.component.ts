@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Report } from '../shared/report.model';
 import { VariableValue } from '../shared/variable-value.model';
 import { CONNECTION_TYPE_HOST } from '../shared/reportConst';
+import { AuthService } from 'src/app/core/authentication/auth.service';
 
 @Component({
   selector: 'run-form-report',
@@ -20,13 +21,19 @@ export class RunFormReportComponent implements OnInit {
 
   isNeedHost: boolean = false;
 
-  constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService,
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     const isNeedHost = this.report.dataSources.some(x => x.data.connectionType === CONNECTION_TYPE_HOST.name);
     if (isNeedHost) {
-      this.context.host = '';
-      this.isNeedHost = isNeedHost;
+      const hostUser = this.authService.getHostUser();
+      if (hostUser) {
+        this.context.host = hostUser.profile.host;
+      } else {
+        this.context.host = '';
+        this.isNeedHost = isNeedHost;
+      }
     }
 
     this.variables = this.reportService.getVariableValues(this.report);

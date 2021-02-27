@@ -1,4 +1,4 @@
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { User } from '../shared/user.model';
@@ -37,18 +37,22 @@ export class AccessSettingsDialogReportComponent implements OnInit {
   ngOnInit(): void {   
     this.isLoading = true;
 
-    forkJoin([
+    const dataObservables: Observable<any>[] = [
       this.userService.getUserById(this.data.authorId),
-      forkJoin(this.data.accessUsers.map(userId => this.userService.getUserById(userId))),
       this.roleService.getRoles()
-    ]).pipe(
+    ];
+    if (this.data.accessUsers.length > 0) {
+      dataObservables.push(forkJoin(this.data.accessUsers.map(userId => this.userService.getUserById(userId))));
+    }
+
+    forkJoin(dataObservables).pipe(
       finalize(() => this.isLoading = false)
     ).subscribe(values => {
       this.guid = this.data.guid;
       this.user = values[0];
-      this.accessUsers = values[1];
+      this.roles = values[1];
+      this.accessUsers = this.data.accessUsers.length > 0 ? values[2] : [];
       this.accessRoles = this.data.accessRoles;
-      this.roles = values[2];
 
       this.searchControl.valueChanges
         .pipe(

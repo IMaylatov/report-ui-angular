@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserManager, User, UserManagerSettings } from 'oidc-client';
 import { Constants } from '../../configs/constants';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,12 @@ export class AuthService {
     return this._userManager.signinRedirect();
   }
 
-  public isAuthenticated = (): Promise<boolean> => {
+  public isAuthenticated = (): Promise<boolean> => {    
+    const user = this.getHostUser();
+    if (user) {
+      return of(true).toPromise();
+    }
+
     return this._userManager.getUser()
     .then(user => {
       if(this._user !== user){
@@ -59,6 +64,7 @@ export class AuthService {
   }
 
   public logout = () => {
+    sessionStorage.clear();
     this._userManager.signoutRedirect();
   }
 
@@ -68,6 +74,11 @@ export class AuthService {
   }
 
   public getAccessToken = (): Promise<string> => {
+    const user = this.getHostUser();
+    if (user) {
+      return of(user.access_token).toPromise();
+    }
+
     return this._userManager.getUser()
     .then(user => {
       return !!user && !user.expired ? user.access_token : null;
@@ -81,8 +92,17 @@ export class AuthService {
     })
   }
 
-  public getUser = (): Promise<User> => {
+  public getUser = (): Promise<User> => {  
+    const user = this.getHostUser();
+    if (user) {
+      return of(user).toPromise();
+    }
+
     return this._userManager.getUser();
+  }
+
+  public getHostUser = () => {
+    return JSON.parse(sessionStorage.getItem(`host.user:${Constants.idpAuthority}:${Constants.idpAuthority}`));
   }
 
   private checkUser = (user : User): boolean => {

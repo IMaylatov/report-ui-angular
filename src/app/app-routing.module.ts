@@ -4,8 +4,10 @@ import { AuthGuardService } from './core/guards/auth-guard.service';
 import { SigninRedirectCallbackComponent } from './components/signin-redirect-callback/signin-redirect-callback.component';
 import { SignoutRedirectCallbackComponent } from './components/signout-redirect-callback/signout-redirect-callback.component';
 import { NotFoundComponent } from './components/error-pages/not-found/not-found.component';
+import { SigninHostComponent } from './components/signin-host/signin-host.component';
 
 const routes: Routes = [
+  { path: 'signin-host', component: SigninHostComponent },
   { path: 'signin-callback', component: SigninRedirectCallbackComponent },
   { path: 'signout-callback', component: SignoutRedirectCallbackComponent },
   { 
