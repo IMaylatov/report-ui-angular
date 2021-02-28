@@ -35,6 +35,7 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('input') input: ElementRef;
   
+  isAllSelected: boolean = false;
   selection: SelectionModel<any>;
   
   constructor(public dialogRef: MatDialogRef<TableDialogInputReportComponent>,
@@ -53,9 +54,19 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
     this.displayedColumns = ['select', ...this.variable.data.table.columns.map(x => x.field)];
     this.filters = this.variable.data.table.columns.map(x => { return { id: x.field, value: ''}});
     
-    const initialSelection = this.multiple 
-      ? (this.variable.value ? this.variable.value : []) 
-      : (this.variable.value ? [this.variable.value] : []);
+    let initialSelection = [];
+    if (this.multiple) {
+      if (this.variable.value) {
+        if (this.variable.value.length === 1 &&
+            this.variable.value[0][this.variable.data.captionField] === "Все") {
+          this.isAllSelected = true;
+        } else {
+          initialSelection = this.variable.value
+        }
+      }
+    } else {
+      initialSelection = this.variable.value ? [this.variable.value] : [];
+    }
     this.selection = new SelectionModel<any>(this.multiple, initialSelection);
   }
 
@@ -104,13 +115,13 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
     this.paginator.page.emit();
   }
 
-  isAllSelected() {
+  isAllPageSelected() {
     return  this.data.every(x => 
       this.selection.selected.some(d => x[this.variable.data.keyField] === d[this.variable.data.keyField]));
   }
 
   masterToggle() {
-    this.isAllSelected() ?
+    this.isAllPageSelected() ?
       this.data.forEach(row => this.selection.deselect(row)) :
       this.data.forEach(row => this.selection.select(row));
   }
@@ -124,8 +135,16 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
       if (!this.multiple) {
         this.selection.clear();
       }
-      this.selection.selected.push(row);
+      if (!this.isAllSelected) {
+        this.selection.selected.push(row);
+      }
     }
+    this.isAllSelected = false;
+  }
+
+  onAllSelected() {
+    this.isAllSelected = true;
+    this.selection.clear();
   }
 
   isSelectedRow(row) {
@@ -133,6 +152,12 @@ export class TableDialogInputReportComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(e) {
-    this.dialogRef.close(this.selection.selected);
+    if (this.isAllSelected) {
+      const allValue = {};
+      allValue[this.variable.data.captionField] = "Все";
+      this.dialogRef.close([allValue]);
+    } else {
+      this.dialogRef.close(this.selection.selected);
+    }
   }
 }

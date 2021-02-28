@@ -2,7 +2,7 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { VariableService } from '../../shared/variable.service';
 import { Report } from '../../shared/report.model';
 import { MatDialog } from '@angular/material/dialog';
@@ -47,7 +47,13 @@ export class MultipleSelectInputReportComponent implements OnInit {
             10, 
             0, 
             [], 
-            [ { id: this.variable.data.captionField, value } ]))
+            [ { id: this.variable.data.captionField, value } ])),
+        map((values: any) => { 
+          const allValue = {};
+          allValue[this.variable.data.captionField] = "Все";
+          values.data.unshift(allValue); 
+          return values; 
+        })
       );
   }
 
@@ -79,16 +85,25 @@ export class MultipleSelectInputReportComponent implements OnInit {
   }
 
   selected(item: any): void {
-    const itemIndex = this.variable.value.findIndex(x => item[this.variable.data.keyField] === x[this.variable.data.keyField]);
-    if (itemIndex === -1) {
-      this.variable.value.push(item);
-      this.itemInput.nativeElement.value = '';
-      this.itemControl.setValue(null);
+    if (item[this.variable.data.captionField] === "Все") {
+      this.variable.value = [item];
+      this.itemControl.reset();
+    } else {
+      const allItemIndex = this.variable.value.findIndex(x => x[this.variable.data.captionField] === "Все")
+      if (allItemIndex !== -1) {
+        this.variable.value.splice(allItemIndex, 1);
+      }
+      const itemIndex = this.variable.value.findIndex(x => item[this.variable.data.keyField] === x[this.variable.data.keyField]);
+      if (itemIndex === -1) {
+        this.variable.value.push(item);
+        this.itemInput.nativeElement.value = '';
+        this.itemControl.setValue(null);
+      }
     }
   }
 
   onMoreClick(e) {
-    e.preventDefault();
+    e.stopPropagation();
     
     const dialogRef = this.dialog.open(TableDialogInputReportComponent, 
       { 

@@ -30,6 +30,7 @@ export class RunFormReportComponent implements OnInit {
       const hostUser = this.authService.getHostUser();
       if (hostUser) {
         this.context.host = hostUser.profile.host;
+        this.context.userId = hostUser.profile.sub;
       } else {
         this.context.host = '';
         this.isNeedHost = isNeedHost;
