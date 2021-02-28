@@ -1,17 +1,5 @@
-<ng-container *ngIf="!report.type">
-  <header></header>
-
-  <div fxLayout="row" fxLayoutGap="10px" [ngStyle]="{'margin':'10px'}">
-    <button fxFlex="10" mat-raised-button color="primary" (click)="onClosedXmlClick()">
-      ClosedXml
-    </button>
-    <button fxFlex="10" mat-raised-button color="primary" (click)="onMalibuClick()">
-      Malibu
-    </button>
-  </div>
-</ng-container>
-
-<form-report *ngIf="report.type"
+<form-report
   [report]="report"
-  [template]="template">
+  [templates]="templates"
+  (save)="onSave()">
 </form-report>

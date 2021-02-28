@@ -45,6 +45,8 @@ import { DateInputReportComponent } from './input/date/date-input-report.compone
 import { RunFormReportComponent } from './run-form/run-form-report.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccessSettingsDialogReportComponent } from './access-settings-dialog/access-settings-dialog-report.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TemplateChooseDialogReportComponent } from './template-choose-dialog/template-choose-dialog-report.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +69,8 @@ import { AccessSettingsDialogReportComponent } from './access-settings-dialog/ac
     RunReportComponent,
     DateInputReportComponent,
     RunFormReportComponent,
-    AccessSettingsDialogReportComponent
+    AccessSettingsDialogReportComponent,
+    TemplateChooseDialogReportComponent
   ],
   imports: [
     CommonModule,
@@ -102,6 +105,7 @@ import { AccessSettingsDialogReportComponent } from './access-settings-dialog/ac
     MatNativeDateModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatTabsModule,
     
     FlexLayoutModule
   ]

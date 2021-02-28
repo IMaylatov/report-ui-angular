@@ -1,7 +1,6 @@
 <div fxLayout="column" fxLayoutAlign="start" style="margin-top: 10px; margin-left: 10px;">
   <div fxLayout="row" fxLayoutAlign="none center" fxLayoutGap="10px">
     <div fxLayout="row" fxLayoutAlign="none center">
-      <b>Шаблон: </b>
       <span *ngIf="!template.data">Не выбран</span>
       <span *ngIf="template.data">Файл.mlbrpt</span>
       <button mat-button *ngIf="template.data" (click)="onDeleteTemplateClick()">

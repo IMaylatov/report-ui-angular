@@ -5,7 +5,6 @@ import { Variable } from './variable.model';
 export class Report {
   public id: number;
   public name: string;
-  public type: string;
 
   public authorId: string;
   public dataSets: DataSet[];

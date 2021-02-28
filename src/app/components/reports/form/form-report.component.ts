@@ -1,8 +1,8 @@
 import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { NotificationService } from 'src/app/shared/service/notification.service';
-import { of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { Location } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DATASET_TYPE_SQLQUERY, REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU } from '../shared/reportConst';
@@ -16,21 +16,30 @@ import { DataSourceDialogReportComponent } from '../data-source-dialog/data-sour
 import { deepCopy } from 'src/app/shared/utils/deep-copy';
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
 import { AccessSettingsDialogReportComponent } from '../access-settings-dialog/access-settings-dialog-report.component';
+import { TemplateChooseDialogReportComponent } from '../template-choose-dialog/template-choose-dialog-report.component';
+import { Template } from '../shared/template.model';
 
 @Component({
   selector: 'form-report',
   templateUrl: './form-report.component.html',
   styleUrls: ['./form-report.component.scss']
 })
-export class FormReportComponent {
+export class FormReportComponent implements OnInit {
   reportTypeClosedXml = REPORT_TYPE_CLOSEDXML;
   reportTypeMalibu = REPORT_TYPE_MALIBU;
 
   @Input() report: Report;
-  @Input() template: { id: number, data: any };
+  @Input() templates: Template[] = [];
+
+  @Output() save: EventEmitter<any> = new EventEmitter();
+
+  tabSelectedIndex: number = 0;
 
   @ViewChild('parameterMenuTrigger')
   contextMenu: MatMenuTrigger;
+  
+  @ViewChild('templateMenuTrigger')
+  templateMenuTrigger: MatMenuTrigger;
 
   contextMenuPosition = { x: '0px', y: '0px' };
   
@@ -41,61 +50,13 @@ export class FormReportComponent {
     public backdropService: BackdropService,
     private location: Location) { }
 
-  onSave(): void {
-    this.backdropService.open();
-
-    let reportOperation = this.report.id === 0
-      ? this.reportService.addReport(this.report)
-          .pipe(
-            switchMap(report => {
-              this.report.id = report.id;
-              this.location.go(`/reports/${this.report.id}`);
-              return of(report);
-            })
-          )
-      : this.reportService.updateReport(this.report);
-
-    reportOperation.pipe(
-      switchMap(report => {
-        if (this.template.id === 0) {
-          if (this.template.data !== null) {
-            return this.templateService.addTemplate(report.id, this.template.data)
-              .pipe(
-                catchError(err => {
-                  this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`);
-                  return of(report);
-                })
-              )
-          } else {
-            return of(report);
-          }
-        } else {          
-          if (this.template.data !== null) {
-            return this.templateService.updateTemplate(report.id, this.template.id, this.template.data)
-              .pipe(
-                catchError(err => {
-                  this.notificationService.showError(`Ошибка сохранения шаблона отчета. ${err.error.message}`);
-                  return of(report);
-                })
-              )
-          } else {
-            return this.templateService.deleteTemplate(report.id, this.template.id)
-              .pipe(
-                catchError(err => {
-                  this.notificationService.showError(`Ошибка удаления шаблона отчета. ${err.error.message}`);
-                  return of(report);
-                })
-              )
-          }
-        }
-      }),
-      finalize(() => this.backdropService.close())
-    ).subscribe(res => {});
+  ngOnInit() {
+    this.tabSelectedIndex = this.templates.length > 0 ? 1 : 0;
   }
 
   onRun() {
     const dialogRef = this.dialog.open(RunDialogReportComponent, 
-      { width: '600px', data: { report: this.report, template: this.template }});
+      { width: '600px', data: { report: this.report, templates: this.templates }});
       
     dialogRef.afterClosed().subscribe(item => {
     });
@@ -136,6 +97,15 @@ export class FormReportComponent {
     this.contextMenu.menuData = { data: { elemType, item }};
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+
+  onContextMenuTemplate(event: MouseEvent, template: any) {
+    event.preventDefault();
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.templateMenuTrigger.menuData = { template };
+    this.templateMenuTrigger.menu.focusFirstItem('mouse');
+    this.templateMenuTrigger.openMenu();
   }
 
   onElemEditClick(elemType: string, item: any) {
@@ -184,5 +154,33 @@ export class FormReportComponent {
         this.report.accessUsers = data.accessUsers;
       }
     });
+  }
+
+  onAddTemplate() {
+    const dialogRef = this.dialog.open(TemplateChooseDialogReportComponent, {
+      width: '500px',
+      autoFocus: false
+    });
+    dialogRef.afterClosed().subscribe(type => {
+      if (type) {
+        if (type === this.reportTypeMalibu &&
+          !this.report.dataSources.some(x => x.name === 'DataSource')) {
+          this.report.dataSources.push({
+            id: 0,
+            name: 'DataSource',
+            type: 'msSql',
+            data: {}
+          });
+        }
+
+        const templateIndex = this.templates.push({id: 0, type: type, data: null});
+        this.tabSelectedIndex = templateIndex;
+      }
+    });
+  }
+
+  onTemplateDeleteClick(template: any) {
+    const templateIndex = this.templates.indexOf(template);
+    this.templates.splice(templateIndex, 1);
   }
 }

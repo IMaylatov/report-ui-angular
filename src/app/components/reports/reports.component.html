@@ -22,15 +22,10 @@
           <td mat-cell *matCellDef="let element"> {{element.name}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Тип </th>
-          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-        </ng-container>
-
         <ng-container matColumnDef="run">
           <th class="w-40" mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element"> 
-            <button mat-icon-button [routerLink]="['run', element.id]">
+            <button mat-icon-button color="primary" [routerLink]="['run', element.id]">
               <mat-icon>play_arrow</mat-icon>
             </button>
           </td>
@@ -39,7 +34,7 @@
         <ng-container matColumnDef="actions">
           <th class="w-40" mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element"> 
-            <button mat-icon-button [matMenuTriggerFor]="menu">
+            <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">

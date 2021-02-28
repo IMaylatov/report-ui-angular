@@ -7,6 +7,7 @@ import { TemplateService } from '../shared/template.service';
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { Template } from '../shared/template.model';
 
 @Component({
   selector: 'detail-report',
@@ -14,21 +15,22 @@ import { catchError, finalize, map, switchMap } from 'rxjs/operators';
   styleUrls: ['./detail-report.component.scss']
 })
 export class DetailReportComponent implements OnInit {
-  private emptyTemplate = { id: 0, data: null};
-
   public reportId: number;
   public report: Report;
-  public template: { id: number, data: any } = this.emptyTemplate;
+  public templates: Template[] = [];
+
+  private sourceTemplateIds: number[] = [];
 
   constructor(private activateRoute: ActivatedRoute,
     private reportService: ReportService,
     private templateService: TemplateService,
     private notificationService: NotificationService,
     public backdropService: BackdropService) { 
-    this.reportId = activateRoute.snapshot.params['id'];
   }
 
   ngOnInit(): void {
+    this.reportId = this.activateRoute.snapshot.params['id'];
+
     this.backdropService.open();
 
     forkJoin([
@@ -43,28 +45,85 @@ export class DetailReportComponent implements OnInit {
         .pipe(
           switchMap(templateItems => {
             return templateItems.length > 0 ?
-              this.templateService.getTemplateData(this.reportId, templateItems[0].id)
-                .pipe(
-                  switchMap(blob => of({ id: templateItems[0].id, data: blob })),
-                  catchError(err => {
-                    this.notificationService.showError(`Ошибка получения шаблона отчета`);
-                    return of(this.emptyTemplate);
-                  })
-                )
-              : of(this.emptyTemplate);
+              forkJoin(templateItems.map(templateItem => 
+                this.templateService.getTemplateData(this.reportId, templateItem.id)
+                  .pipe(
+                    switchMap(blob => {
+                      const template: Template = { id: templateItem.id, type: templateItem.type, data: blob };
+                      return of(template);
+                    }),
+                    catchError(err => {
+                      this.notificationService.showError(`Ошибка получения шаблона отчета`);
+                      return of(null);
+                    })
+                  )))
+              : of([]);
           }),
           catchError(err => { 
             this.notificationService.showError(`Ошибка получения списка шаблонов отчетов`);
-            return of(this.emptyTemplate);
+            return of([]);
           })
         )
     ])
       .pipe(
         finalize(() => this.backdropService.close())
       )
-      .subscribe(([report, template]) => {
+      .subscribe(([report, templates]) => {
         this.report = report;
-        this.template = template;
+        this.templates = templates;
+        this.sourceTemplateIds = this.templates.map(x => x.id);
       });
+  }
+
+  onSave() {
+    this.backdropService.open();
+
+    this.reportService.updateReport(this.report)
+      .pipe(
+        switchMap(report => {
+          const addTemplates = this.templates.filter(x => !this.sourceTemplateIds.includes(x.id));
+          const updateTemplates = this.templates.filter(x => this.sourceTemplateIds.includes(x.id));
+          const deleteTemplates = this.sourceTemplateIds.filter(x => !this.templates.some(t => t.id === x));
+
+          const addTemplates$ = forkJoin(
+            addTemplates.map(template => 
+              this.templateService.addTemplate(report.id, template)
+                .pipe(
+                  catchError(err => {
+                    this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`);
+                    return of(null);
+                  })
+                ))
+          );
+          const updateTemplates$ = forkJoin(
+            updateTemplates.map(template => 
+              this.templateService.updateTemplate(report.id, template.id, template)
+                .pipe(
+                  catchError(err => {
+                    this.notificationService.showError(`Ошибка сохранения шаблона отчета. ${err.error.message}`);
+                    return of(null);
+                  })
+                ))
+          );
+          const deleteTemplates$ = forkJoin(
+            deleteTemplates.map(templateId => 
+              this.templateService.deleteTemplate(report.id, templateId)
+              .pipe(
+                catchError(err => {
+                  this.notificationService.showError(`Ошибка удаления шаблона отчета. ${err.error.message}`);
+                  return of(null);
+                })
+              ))
+          )
+
+          return forkJoin([
+              addTemplates$,
+              updateTemplates$,
+              deleteTemplates$
+            ]);
+        }),
+        finalize(() => this.backdropService.close())
+      )
+      .subscribe(res => {});
   }
 }

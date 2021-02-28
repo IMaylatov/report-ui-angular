@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TemplateItem } from './template-item.model';
+import { Template } from './template.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,16 +20,18 @@ export class TemplateService {
     return this.http.get(`${this.reportUrl}/${reportId}/templates/${templateId}/data`, {responseType: 'blob'});
   }
 
-  addTemplate(reportId: number, template: any) {
+  addTemplate(reportId: number, template: Template) {
     const formData = new FormData();
-      formData.append('template', template);
+    formData.append('type', template.type);
+    formData.append('data', template.data);
   
     return this.http.post(`/api/reports/${reportId}/templates`, formData);
   }
 
-  updateTemplate(reportId: number, templateId: number, template: any) {
+  updateTemplate(reportId: number, templateId: number, template: Template) {
     const formData = new FormData();
-      formData.append('template', template);
+    formData.append('type', template.type);
+    formData.append('data', template.data);
   
     return this.http.put(`/api/reports/${reportId}/templates/${templateId}`, formData);
   }

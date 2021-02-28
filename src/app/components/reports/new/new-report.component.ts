@@ -1,8 +1,15 @@
 import { Component } from '@angular/core';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/authentication/auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Report } from '../shared/report.model';
-import { REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU } from '../shared/reportConst';
+import { ReportService } from '../shared/report.service';
+import { Template } from '../shared/template.model';
+import { Location } from '@angular/common';
+import { of, forkJoin } from 'rxjs';
+import { TemplateService } from '../shared/template.service';
+import { NotificationService } from 'src/app/shared/service/notification.service';
+import { BackdropService } from 'src/app/shared/service/backdrop.service';
 
 @Component({
   selector: 'new-report',
@@ -13,7 +20,6 @@ export class NewReportComponent {
   report: Report = {
     id: 0,
     name: 'Новый отчет',
-    type: '',
     authorId: '',
     dataSets: [],
     dataSources: [],
@@ -22,26 +28,43 @@ export class NewReportComponent {
     accessRoles: [],
     accessUsers: []
   };
-  template = { id: 0, data: null };
+  templates: Template[] = [];
 
-  constructor(private authService: AuthService){ }
+  constructor(private authService: AuthService,
+    private reportService: ReportService,
+    public templateService: TemplateService,
+    private notificationService: NotificationService,
+    public backdropService: BackdropService,
+    private location: Location){ }
 
   ngOnInit(): void {
     this.authService.getUser()
       .then(user => this.report.authorId = user.profile.sub);
   }
 
-  onClosedXmlClick() {
-    this.report.type = REPORT_TYPE_CLOSEDXML;
-  }
+  onSave() {
+    this.backdropService.open();
 
-  onMalibuClick() {
-    this.report.dataSources.push({
-      id: 0,
-      name: 'DataSource',
-      type: 'msSql',
-      data: {}
-    });
-    this.report.type = REPORT_TYPE_MALIBU;
+    this.reportService.addReport(this.report)
+      .pipe(
+        switchMap(report => {
+          this.report.id = report.id;
+          this.location.go(`/reports/${this.report.id}`);
+          return this.templates.length > 0
+            ? forkJoin(
+              this.templates.map(template => 
+                this.templateService.addTemplate(report.id, template)
+                .pipe(
+                  catchError(err => {
+                    this.notificationService.showError(`Ошибка добавления шаблона отчета. ${err.error.message}`);
+                    return of(null);
+                  })
+                ))
+            )
+            : of(null);
+        }),
+        finalize(() => this.backdropService.close())
+      )
+      .subscribe(res => {});
   }
 }

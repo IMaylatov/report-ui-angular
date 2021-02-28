@@ -5,6 +5,7 @@ import { deepCopy } from 'src/app/shared/utils/deep-copy';
 import { ReportListItem } from './report-list-item.model';
 import { Report } from './report.model';
 import { VARIABLE_TYPE_DATE, VARIABLE_TYPE_MULTIPLE_SELECT, VARIABLE_TYPE_PERIOD, VARIABLE_TYPE_SELECT } from './reportConst';
+import { Template } from './template.model';
 import { VariableValue } from './variable-value.model';
 
 @Injectable({
@@ -35,19 +36,20 @@ export class ReportService {
     return this.http.delete(`${this.reportUrl}/${report.id}`);
   }
 
-  runReport(report: Report, template: any, context: any) {
+  runReport(report: Report, template: Template, context: any) {
     const formData = new FormData();
     
     formData.append('report', JSON.stringify(report));
-    formData.append('template', template.data);
+    formData.append('templateType', template.type);
+    formData.append('templateData', template.data);
     formData.append('context', JSON.stringify(context));
   
     return this.http.post('/api/run/report', formData, {responseType: 'blob'});
   }
 
-  runReportByGuid(reportGuid: string, context: any) {
+  runReportByGuid(reportGuid: string, templateId: number, context: any) {
     const formData = new FormData();
-    
+    formData.append('templateId', templateId.toString());
     formData.append('context', JSON.stringify(context));
   
     return this.http.post(`/api/run/report/${reportGuid}`, formData, {responseType: 'blob'});

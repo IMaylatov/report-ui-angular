@@ -1,4 +1,5 @@
 <form-report *ngIf="report"
   [report]="report"
-  [template]="template">
+  [templates]="templates"
+  (save)="onSave()">
 </form-report>

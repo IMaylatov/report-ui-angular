@@ -3,7 +3,11 @@
   <input matInput [(ngModel)]="context.host">
 </mat-form-field>
 
-<div *ngIf="!isNeedHost">
+<div *ngIf="!selectedTemplate">
+  <button *ngFor="let template of templates" (click)="selectedTemplate = template">{{template.type}}</button>
+</div>
+
+<div *ngIf="selectedTemplate && !isNeedHost">
   <ng-container *ngFor="let variable of variables">
     <input-factory-report [report]="report" [variable]="variable" [context]="context">
     </input-factory-report>
@@ -13,7 +17,7 @@
 <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
   <button mat-raised-button (click)="onCancelClick()">Отмена</button>
 
-  <button *ngIf="isNeedHost" mat-raised-button color="primary" (click)="onHostNextClick()">Далее</button>
+  <button *ngIf="selectedTemplate && isNeedHost" mat-raised-button color="primary" (click)="onHostNextClick()">Далее</button>
   
   <button *ngIf="!isNeedHost"
     mat-raised-button color="primary" 

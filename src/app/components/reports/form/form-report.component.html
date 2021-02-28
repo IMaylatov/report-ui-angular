@@ -6,8 +6,7 @@
       </div>
 
       <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-        <span class="header-report-type">{{report.type}}</span>  
-        <button mat-raised-button (click)="onSave()" class="header-report-action-button">Сохранить</button>
+        <button mat-raised-button (click)="save.emit()" class="header-report-action-button">Сохранить</button>
         <button mat-raised-button (click)="onRun()" class="header-report-action-button">Запустить</button>
       </div>
     </div>
@@ -86,9 +85,37 @@
 
   </mat-drawer>
   <mat-drawer-content>
-    <malibu-report *ngIf="report.type === reportTypeMalibu"
-      [report]="report"
-      [template]="template">
-    </malibu-report>
+    <mat-tab-group animationDuration="0ms" [selectedIndex]="tabSelectedIndex">
+      <mat-tab disabled>
+        <ng-template mat-tab-label>
+          <button mat-button color="primary" (click)="onAddTemplate()">
+            <span>Добавить шаблон</span>
+            <mat-icon>add_circle</mat-icon>
+          </button>
+        </ng-template>
+      </mat-tab>
+      <mat-tab *ngFor="let template of templates" class="foo">
+        <ng-template mat-tab-label>
+          <div (contextmenu)="onContextMenuTemplate($event, template)" class="mat-tab-label-fill">
+            {{template.type}}
+          </div>
+        </ng-template>
+        <malibu-report *ngIf="template.type === reportTypeMalibu"
+          [report]="report"
+          [template]="template">
+        </malibu-report>
+      </mat-tab>
+    </mat-tab-group>
+    <div style="visibility: hidden; position: fixed"
+        [style.left]="contextMenuPosition.x"
+        [style.top]="contextMenuPosition.y"
+        #templateMenuTrigger=matMenuTrigger
+        [matMenuTriggerFor]="templateMenu">
+    </div>
+    <mat-menu #templateMenu="matMenu">
+      <ng-template matMenuContent let-template="template">
+        <button mat-menu-item (click)="onTemplateDeleteClick(template)">Удалить</button>
+      </ng-template>
+    </mat-menu>
   </mat-drawer-content>
 </mat-drawer-container>

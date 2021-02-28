@@ -36,10 +36,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.authService.checkIfUserIsAdmin()
       .then(userIsAdmin => {
         this.userIsAdmin = userIsAdmin;
+        this.displayedColumns = ['name', 'run'];
         if (userIsAdmin) {
-          this.displayedColumns = ['name', 'type', 'run', 'actions'];
-        } else {
-          this.displayedColumns = ['name', 'run'];
+          this.displayedColumns.push('actions')
         }
       })
 

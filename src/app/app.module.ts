@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BackdropComponent } from './components/backdrop/backdrop.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SigninHostComponent } from './components/signin-host/signin-host.component';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { getRussianPaginatorIntl } from './shared/paginator/russian-paginator-intl';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import { SigninHostComponent } from './components/signin-host/signin-host.compon
     MatProgressSpinnerModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
+    { provide: MatPaginatorIntl, useValue: getRussianPaginatorIntl() }
   ],
   bootstrap: [AppComponent]
 })

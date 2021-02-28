@@ -1,11 +1,12 @@
 import { NotificationService } from 'src/app/shared/service/notification.service';
-import { Template } from "@angular/compiler/src/render3/r3_ast";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { saveAs } from "file-saver"
 import { Report } from "../shared/report.model";
 import { ReportService } from "../shared/report.service";
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
+import { Template } from '../shared/template.model';
+import { TemplateItem } from '../shared/template-item.model';
 
 @Component({
   selector: 'run-dialog-report',
@@ -14,26 +15,27 @@ import { BackdropService } from 'src/app/shared/service/backdrop.service';
 })
 export class RunDialogReportComponent {
   report: Report;
-  template: Template;
+  templates: TemplateItem[] = [];
   context: any = {};
 
   constructor(public dialogRef: MatDialogRef<RunDialogReportComponent>,
     private reportService: ReportService,
-    @Inject(MAT_DIALOG_DATA) public data: { report: Report, template: Template },
+    @Inject(MAT_DIALOG_DATA) public data: { report: Report, templates: Template[] },
     private notificationService: NotificationService,
     private backdropService: BackdropService) { 
       this.report = data.report;
-      this.template = data.template;
+      this.templates = data.templates.map(template => { return { id: template.id, type: template.type, reportId: this.report.id } });
     }
 
   onCancelClick() {
     this.dialogRef.close();
   }
 
-  onRunClick(variableValues) {
+  onRunClick(data: { template: any, variableValues: any }) {
     this.backdropService.open();
 
-    this.reportService.runReport(this.report, this.template, { ...this.context, variableValues })
+    const selectedTemplate = this.data.templates.find(x => x.id === data.template.id);
+    this.reportService.runReport(this.report, selectedTemplate, { ...this.context, variableValues: data.variableValues })
       .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
         err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`),
         () => this.backdropService.close());
