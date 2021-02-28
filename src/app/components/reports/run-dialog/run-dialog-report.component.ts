@@ -7,6 +7,7 @@ import { ReportService } from "../shared/report.service";
 import { BackdropService } from 'src/app/shared/service/backdrop.service';
 import { Template } from '../shared/template.model';
 import { TemplateItem } from '../shared/template-item.model';
+import { REPORT_TYPE_CLOSEDXML, REPORT_TYPE_DOCX, REPORT_TYPE_MALIBU } from '../shared/reportConst';
 
 @Component({
   selector: 'run-dialog-report',
@@ -36,7 +37,19 @@ export class RunDialogReportComponent {
 
     const selectedTemplate = this.data.templates.find(x => x.id === data.template.id);
     this.reportService.runReport(this.report, selectedTemplate, { ...this.context, variableValues: data.variableValues })
-      .subscribe(data => saveAs(data, `${this.report.name}.xlsx`),
+      .subscribe(data => {
+          let extension = '';
+          switch(selectedTemplate.type) {
+            case REPORT_TYPE_CLOSEDXML:
+            case REPORT_TYPE_MALIBU:
+              extension = 'xlsx'
+              break;
+            case REPORT_TYPE_DOCX:
+              extension = 'docx';
+              break;
+          }
+          saveAs(data, `${this.report.name}.${extension}`);
+        },
         err => this.notificationService.showError(`Ошибка формирования отчета. ${err.error.message}`),
         () => this.backdropService.close());
   }

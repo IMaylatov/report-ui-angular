@@ -1,0 +1,21 @@
+<div fxLayout="column" fxLayoutAlign="start" style="margin-top: 10px; margin-left: 10px;">
+  <div fxLayout="row" fxLayoutAlign="none center" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="none center">
+      <span *ngIf="!template.data">Не выбран</span>
+      <span *ngIf="template.data">Файл.mlbrpt</span>
+      <button mat-button *ngIf="template.data" (click)="onDeleteTemplateClick()">
+        <mat-icon color="accent">delete</mat-icon>
+      </button>
+    </div>
+
+    <button *ngIf="template.data" mat-raised-button (click)="download()">
+      <mat-icon>get_app</mat-icon>
+      <span>Скачать</span>
+    </button>
+
+    <button mat-raised-button (click)="fileInput.click()">
+      <span>Выбрать</span>
+      <input #fileInput type="file" (change)="onTemplateChange($event.target.files)" style="display:none;" />
+    </button>
+  </div>
+</div>

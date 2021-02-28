@@ -47,6 +47,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccessSettingsDialogReportComponent } from './access-settings-dialog/access-settings-dialog-report.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TemplateChooseDialogReportComponent } from './template-choose-dialog/template-choose-dialog-report.component';
+import { ClosedxmlReportComponent } from './closedxml/closedxml-report.component';
+import { DocxReportComponent } from './docx/docx-report.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +72,9 @@ import { TemplateChooseDialogReportComponent } from './template-choose-dialog/te
     DateInputReportComponent,
     RunFormReportComponent,
     AccessSettingsDialogReportComponent,
-    TemplateChooseDialogReportComponent
+    TemplateChooseDialogReportComponent,
+    ClosedxmlReportComponent,
+    DocxReportComponent
   ],
   imports: [
     CommonModule,

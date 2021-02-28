@@ -100,10 +100,20 @@
             {{template.type}}
           </div>
         </ng-template>
-        <malibu-report *ngIf="template.type === reportTypeMalibu"
-          [report]="report"
-          [template]="template">
-        </malibu-report>
+        <container-element [ngSwitch]="template.type">
+          <malibu-report *ngSwitchCase="reportTypeMalibu"
+            [report]="report"
+            [template]="template">
+          </malibu-report>
+          <closedxml-report *ngSwitchCase="reportTypeClosedXml"
+            [report]="report"
+            [template]="template">
+          </closedxml-report>
+          <docx-report *ngSwitchCase="reportTypeDocx"
+            [report]="report"
+            [template]="template">
+          </docx-report>
+        </container-element>
       </mat-tab>
     </mat-tab-group>
     <div style="visibility: hidden; position: fixed"

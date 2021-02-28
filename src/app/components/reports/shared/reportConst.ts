@@ -1,5 +1,6 @@
 export const REPORT_TYPE_CLOSEDXML = 'closedXml';
 export const REPORT_TYPE_MALIBU = 'malibu';
+export const REPORT_TYPE_DOCX = 'docx';
 
 export const REPORT_TYPES = [
   REPORT_TYPE_CLOSEDXML,

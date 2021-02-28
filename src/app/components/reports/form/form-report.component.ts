@@ -1,11 +1,9 @@
-import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { NotificationService } from 'src/app/shared/service/notification.service';
-import { forkJoin, of } from 'rxjs';
 import { Location } from '@angular/common';
 import { Component, Input, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { DATASET_TYPE_SQLQUERY, REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU } from '../shared/reportConst';
+import { DATASET_TYPE_SQLQUERY, REPORT_TYPE_CLOSEDXML, REPORT_TYPE_MALIBU, REPORT_TYPE_DOCX } from '../shared/reportConst';
 import { Report } from '../shared/report.model';
 import { ReportService } from '../shared/report.service';
 import { TemplateService } from '../shared/template.service';
@@ -27,6 +25,7 @@ import { Template } from '../shared/template.model';
 export class FormReportComponent implements OnInit {
   reportTypeClosedXml = REPORT_TYPE_CLOSEDXML;
   reportTypeMalibu = REPORT_TYPE_MALIBU;
+  reportTypeDocx = REPORT_TYPE_DOCX;
 
   @Input() report: Report;
   @Input() templates: Template[] = [];
